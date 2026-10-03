@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu Ivent SMK 22 • intuisi.teh Indonesia</title>
+<meta name="description" content="Menu Ivent SMK 22 intuisi.teh Indonesia">
+<style>
+:root{
+  --green:#0d6b45;--green-dark:#084a31;--green-soft:#eef7f1;
+  --cream:#f8fbf6;--yellow:#ffd84a;--ink:#16342a;--muted:#6e7f77;--line:#dce8e1;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f8fbf6 0%,#eef6f0 100%);color:var(--ink)}
+a{text-decoration:none;color:inherit}
+.container{max-width:1200px;margin:auto;padding:18px}
+.hero{background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:24px;padding:26px;color:#fff;box-shadow:0 14px 36px rgba(15,75,50,.16);display:grid;grid-template-columns:230px 1fr;gap:24px;align-items:center}
+.logo-wrap{background:#fff;border-radius:16px;padding:10px;display:flex;align-items:center;justify-content:center}
+.logo-wrap img{width:100%;max-height:120px;object-fit:contain;border-radius:10px}
+.hero h1{font-size:34px;line-height:1.05;margin:0 0 8px}
+.hero p{margin:6px 0;color:#e5f5eb}
+.tagline{color:var(--yellow)!important;font-weight:800}
+.hero-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.hero-links a{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.2);padding:9px 12px;border-radius:999px;font-size:13px}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0 14px}
+.filter{border:0;background:#fff;color:var(--green-dark);font-weight:800;padding:10px 14px;border-radius:999px;cursor:pointer;box-shadow:0 6px 18px rgba(18,67,45,.07)}
+.filter.active{background:var(--green);color:#fff}
+.search{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font-size:15px;outline:none;background:#fff;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.section{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 24px rgba(18,67,45,.06)}
+.section-head{padding:13px 16px;background:linear-gradient(90deg,var(--green-dark),var(--green));color:#fff;font-weight:900;font-size:17px;display:flex;justify-content:space-between;gap:12px}
+.section-head span:last-child{color:var(--yellow)}
+.items{padding:8px 14px 10px}
+.item{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:12px 2px;border-bottom:1px dashed var(--line)}
+.item:last-child{border-bottom:0}
+.item-name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}
+.price{font-weight:900;color:var(--green);white-space:nowrap}
+.highlight{background:linear-gradient(90deg,#fffbe4,#fff);border-radius:12px;padding-left:10px;padding-right:10px}
+.footer{margin-top:20px;background:var(--green-dark);color:#fff;border-radius:20px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.footer-box{border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:14px}
+.footer-title{font-weight:900;color:var(--yellow);margin-bottom:7px}
+.small{font-size:13px;line-height:1.5;color:#e3f1ea}
+.note{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 4px}
+.hidden{display:none!important}
+@media(max-width:800px){.hero{grid-template-columns:1fr;text-align:center}.logo-wrap{max-width:280px;margin:auto}.hero-links{justify-content:center}.grid{grid-template-columns:1fr}}
+@media(max-width:520px){.hero h1{font-size:28px}.container{padding:12px}.footer{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="hero">
+    <div class="logo-wrap">
+      <img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="intuisi.teh Indonesia">
+    </div>
+    <div>
+      <h1>Menu Ivent SMK 22</h1>
+      <p class="tagline">Dari Lidah Turun Ke Hati</p>
+      <p>Silakan pilih menu favoritmu dan cek harga di bawah.</p>
+      <div class="hero-links">
+        <a href="https://wa.me/6285726677641" target="_blank" rel="noopener">WhatsApp 0857 2667 7641</a>
+        <a href="https://www.instagram.com/intuisitehindonesia/" target="_blank" rel="noopener">Instagram • intuisi.teh indonesia</a>
+      </div>
+    </div>
+  </header>
+
+  <input id="search" class="search" placeholder="Cari menu..." oninput="render()" aria-label="Cari menu">
+  <div id="filters" class="filters"></div>
+  <div id="menu" class="grid"></div>
+
+  <footer class="footer">
+    <div class="footer-box">
+      <div class="footer-title">METODE PEMBAYARAN</div>
+      <div class="small">Cash • QRIS</div>
+    </div>
+    <div class="footer-box">
+      <div class="footer-title">KONTAK</div>
+      <div class="small">WhatsApp: 0857 2667 7641<br>Instagram: intuisi.teh indonesia</div>
+    </div>
+  </footer>
+  <div class="note">Menu Ivent SMK 22 • intuisi.teh Indonesia</div>
+</div>
+
+<script>
+const PRODUCTS=[
+ {name:'French Fries',size:'STD',price:18000,series:'Food'},
+ {name:'Nugget',size:'STD',price:23000,series:'Food'},
+ {name:'Mix Platter',size:'STD',price:35000,series:'Food'},
+
+ {name:'Intuisi Tea',size:'STD',price:10000,series:'Tea Series'},
+ {name:'Thai Tea',size:'STD',price:20000,series:'Tea Series'},
+ {name:'Green Tea',size:'STD',price:15000,series:'Tea Series'},
+ {name:'Milk Tea',size:'STD',price:18000,series:'Tea Series'},
+ {name:'Mango Tea',size:'STD',price:15000,series:'Tea Series'},
+ {name:'Lychee Tea',size:'STD',price:15000,series:'Tea Series'},
+
+ {name:'Macha',size:'M',price:25000,series:'Milk Base'},
+ {name:'Choco Milo',size:'M',price:23000,series:'Milk Base'},
+ {name:'Oreo',size:'M',price:25000,series:'Milk Base'},
+
+ {name:'Amerikano',size:'M',price:18000,series:'Coffee Base'},
+ {name:'Intuisi Latte',size:'M',price:20000,series:'Coffee Base'},
+ {name:'Spanish Latte',size:'M',price:23000,series:'Coffee Base'},
+ {name:'Aren Latte',size:'M',price:23000,series:'Coffee Base'},
+ {name:'Butterscotch Latte',size:'M',price:25000,series:'Coffee Base'},
+ {name:'Salted Caramel',size:'M',price:28000,series:'Coffee Base'},
+
+ {name:'Blue Ocean',size:'M',price:20000,series:'Mocktail'},
+ {name:'Mango Squash',size:'M',price:20000,series:'Mocktail'},
+ {name:'Lychee Squash',size:'M',price:20000,series:'Mocktail'},
+
+ {name:'Combo Big Twins (2 French Fries + Jasmine)',size:'STD',price:35000,series:'Paket Combo'}
+];
+let active='Semua';
+function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','')}
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function setActive(v){active=v;render()}
+function renderFilters(){
+ const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];
+ document.getElementById('filters').innerHTML=all.map(s=>'<button class="filter '+(active===s?'active':'')+'" onclick="setActive('+JSON.stringify(s)+')">'+esc(s)+'</button>').join('');
+}
+function render(){
+ renderFilters();
+ const q=(document.getElementById('search').value||'').toLowerCase().trim();
+ const arr=PRODUCTS.filter(p=>(active==='Semua'||p.series===active)&&(!q||p.name.toLowerCase().includes(q)));
+ const grouped={};
+ arr.forEach(p=>(grouped[p.series]??=[]).push(p));
+ const order=['Food','Tea Series','Milk Base','Coffee Base','Mocktail','Paket Combo'];
+ document.getElementById('menu').innerHTML=order.filter(s=>grouped[s]?.length).map(s=>{
+   const special=s==='Paket Combo';
+   return '<section class="section"><div class="section-head"><span>'+esc(s)+'</span><span>'+grouped[s].length+' menu</span></div><div class="items">'+grouped[s].map(p=>
+   '<div class="item '+(special?'highlight':'')+'"><div><div class="item-name">'+esc(p.name)+'</div><div class="meta">Size: '+esc(p.size)+'</div></div><div class="price">'+rupiah(p.price)+'</div></div>'
+   ).join('')+'</div></section>';
+ }).join('') || '<div class="section"><div class="empty">Menu tidak ditemukan.</div></div>';
+}
+render();
+</script>
+</body>
+</html>
