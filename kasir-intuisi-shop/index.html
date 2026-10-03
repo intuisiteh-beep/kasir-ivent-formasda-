@@ -14,8 +14,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 .layout{display:grid;grid-template-columns:1.55fr .9fr;gap:18px;padding:18px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 10px 28px rgba(20,60,45,.07);overflow:hidden}.card h2{margin:0;padding:14px 16px;background:var(--green2);color:#fff;font-size:16px}.pad{padding:16px}
 .search{display:grid;grid-template-columns:1fr 180px;gap:10px;margin-bottom:12px}input,select{width:100%;padding:11px 12px;border:1px solid #cbd9d2;border-radius:10px;background:#fff;font-size:14px;outline:none}
 .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.tab{border:0;border-radius:999px;padding:9px 12px;background:#edf4ef;color:var(--green2);font-weight:800;cursor:pointer}.tab.active{background:var(--green);color:#fff}
-.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}.price{font-weight:900;color:var(--green);margin-top:4px}
-.badge{display:inline-block;font-size:11px;margin-left:5px;color:#b07b00;background:#fff4b8;border-radius:999px;padding:3px 6px;font-weight:900}
+.series-block{margin-bottom:16px}.series-label{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--green2);color:#fff;border-radius:12px 12px 0 0;padding:10px 12px;font-weight:900}.size-group{margin:10px 0 12px;border:1px solid var(--line);border-radius:14px;background:#fbfdfb;overflow:hidden}.size-title{display:flex;align-items:center;gap:9px;padding:9px 12px;background:#f0f6f2;border-bottom:1px solid var(--line)}.size-pill{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:6px 10px;border-radius:999px;background:var(--green);color:#fff;font-weight:900;font-size:12px}.size-note{font-size:12px;color:var(--muted);font-weight:700}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}.product{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fff}.name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}.price{font-weight:900;color:var(--green);margin-top:4px}.badge{display:inline-block;font-size:11px;margin-left:5px;color:#b07b00;background:#fff4b8;border-radius:999px;padding:3px 6px;font-weight:900}
 .cart{display:flex;flex-direction:column;gap:9px;max-height:420px;overflow:auto;margin-top:10px}.item{border:1px solid var(--line);border-radius:12px;padding:11px}.row{display:flex;justify-content:space-between;gap:10px}.qty{display:flex;gap:6px;align-items:center;margin-top:8px}.qty button{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:#edf3ef;font-weight:900;cursor:pointer}
 .totalbox{margin-top:14px;padding:14px;background:#eef7f1;border-radius:12px}.tot{display:flex;justify-content:space-between;margin:6px 0}.grand{font-size:20px;font-weight:900}
 .pay{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.paybox{border:1px solid var(--line);border-radius:10px;padding:11px;cursor:pointer}.paybox.active{border:2px solid var(--green);background:#eef8f3}.paybox input{width:auto;margin-right:5px}
@@ -23,7 +22,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 .section{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;margin-top:5px;font-size:18px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.filters>*{max-width:220px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#f6faf7}.empty{text-align:center;padding:22px;color:var(--muted)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:30;align-items:center;justify-content:center;padding:20px}.modalbox{width:min(560px,100%);background:#fff;border-radius:16px;padding:18px}.receipt{font:12px/1.45 monospace}.receipt hr{border:0;border-top:1px dashed #999}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}}
-@media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.brand img{width:165px;height:64px}.search{grid-template-columns:1fr}.products{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.pay{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.brand img{width:165px;height:64px}.search{grid-template-columns:1fr}.products{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.pay{grid-template-columns:1fr 1fr}.size-pill{min-width:54px}.series-label{font-size:14px}}
 @media print{header,.no-print{display:none!important}.modal{position:static;background:#fff;padding:0}.modalbox{box-shadow:none;border:0}.receipt{font-size:11px}}
 </style>
 </head>
@@ -160,13 +159,34 @@ function renderTabs(){
  tabs.innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" data-series="'+esc(s)+'">'+esc(s)+'</button>').join('');
  tabs.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>setSeries(btn.dataset.series)));
 }
+function sizeOrder(a,b){
+ const order={'STD':0,'S':1,'M':2,'L':3,'Yakult':1,'Yoghurt Breeze':2};
+ return (order[a]??99)-(order[b]??99) || a.localeCompare(b);
+}
+function renderProductCard(p){
+ const best=BEST[p.series]?.has(p.name);
+ return '<div class="product"><div><div class="name">'+(best?'<span class="badge">★ BEST SELLER</span>':'')+esc(p.name)+'</div><div class="meta">'+esc(p.series)+'</div><div class="price">'+rupiah(p.price)+'</div></div><button class="btn" onclick="add('+p.id+')">Tambah</button></div>';
+}
+function renderSeriesBlock(series, products){
+ const groups={};
+ products.forEach(p=>(groups[p.size]??=[]).push(p));
+ const sizes=Object.keys(groups).sort(sizeOrder);
+ return '<div class="series-block"><div class="series-label"><span>'+esc(series)+'</span><span>'+products.length+' menu</span></div>'+
+ sizes.map(size=>{
+   const list=groups[size].sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name));
+   const label=series==='Signature Intuisi Teh' ? (size==='Yakult'?'YAKULT':'YOGHURT BREEZE') : 'SIZE '+size;
+   return '<div class="size-group"><div class="size-title"><span class="size-pill">'+esc(label)+'</span><span class="size-note">'+list.length+' pilihan</span></div><div class="products">'+list.map(renderProductCard).join('')+'</div></div>';
+ }).join('')+'</div>';
+}
 function renderProducts(){
  const q=(document.getElementById('search').value||'').toLowerCase().trim();
- const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q))).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name)||a.size.localeCompare(b.size));
- document.getElementById('products').innerHTML=arr.length?arr.map(p=>{
-   const best=BEST[p.series]?.has(p.name);
-   return '<div class="product"><div><div class="name">'+(best?'<span class="badge">★ BEST SELLER</span>':'')+esc(p.name)+'</div><div class="meta">'+esc(p.series)+' • Size '+esc(p.size)+'</div><div class="price">'+rupiah(p.price)+'</div></div><button class="btn" onclick="add('+p.id+')">Tambah</button></div>'
- }).join(''):'<div class="empty">Menu tidak ditemukan.</div>';
+ const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q)));
+ const grouped={};
+ arr.forEach(p=>(grouped[p.series]??=[]).push(p));
+ const order=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
+ document.getElementById('products').innerHTML=order.filter(s=>grouped[s]?.length)
+   .map(s=>renderSeriesBlock(s,grouped[s]))
+   .join('') || '<div class="empty">Menu tidak ditemukan.</div>';
 }
 function add(id){const p=PRODUCTS.find(x=>x.id===id),f=cart.find(x=>x.id===id);if(f)f.qty++;else cart.push({...p,qty:1});renderCart()}
 function changeQty(id,d){const f=cart.find(x=>x.id===id);if(!f)return;f.qty+=d;if(f.qty<=0)cart=cart.filter(x=>x.id!==id);renderCart()}
