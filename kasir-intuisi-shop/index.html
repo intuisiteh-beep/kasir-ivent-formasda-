@@ -156,7 +156,7 @@ function init(){
  document.getElementById('payments').innerHTML=PAYMENTS.map(p=>'<div class="paybox '+(p==='Cash'?'active':'')+'" data-pay="'+esc(p)+'" onclick="setPayment(\''+p+'\',this)"><input type="radio" name="payment" '+(p==='Cash'?'checked':'')+'> '+esc(p)+'</div>').join('');
  document.getElementById('historyDate').value=today();renderTabs();renderSizeTabs();renderProducts();renderCart();renderHistory();renderStats();
 }
-function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
+function setSeries(v){activeSeries=v;activeSize='Semua';renderTabs();renderSizeTabs();renderProducts()}
 function renderTabs(){
  const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];
  const tabs=document.getElementById('tabs');
@@ -167,7 +167,8 @@ function setSize(v){activeSize=v;renderSizeTabs();renderProducts()}
 function renderSizeTabs(){
  const sizes=['Semua','STD','S','M','L'];
  const el=document.getElementById('sizeTabs');
- el.innerHTML=sizes.map(s=>'<button type="button" class="size-tab '+(activeSize===s?'active':'')+'" onclick="setSize('+JSON.stringify(s)+')">'+esc(s==='Semua'?'Semua Size':'Size '+s)+'</button>').join('');
+ el.innerHTML=sizes.map(s=>'<button type="button" class="size-tab '+(activeSize===s?'active':'')+'" data-size="'+esc(s)+'">'+esc(s==='Semua'?'Semua Size':'Size '+s)+'</button>').join('');
+ el.querySelectorAll('.size-tab').forEach(btn=>btn.addEventListener('click',()=>setSize(btn.dataset.size)));
 }
 function sizeOrder(a,b){
  const order={'STD':0,'S':1,'M':2,'L':3,'Yakult':1,'Yoghurt Breeze':2};
