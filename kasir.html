@@ -115,7 +115,7 @@ function init(){
  document.getElementById('historyDate').value=today();renderTabs();renderProducts();renderCart();renderHistory();renderStats();
 }
 function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
-function renderTabs(){const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button class="tab '+(activeSeries===s?'active':'')+'" onclick="setSeries('+JSON.stringify(s)+')">'+esc(s)+'</button>').join('')}
+function renderTabs(){const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" onclick=\'setSeries('+JSON.stringify(s)+')\'>'+esc(s)+'</button>').join('')}
 function renderProducts(){
  const q=(document.getElementById('search').value||'').toLowerCase().trim();
  const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q)));
