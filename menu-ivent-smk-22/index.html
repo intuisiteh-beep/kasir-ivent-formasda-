@@ -113,10 +113,29 @@ const PRODUCTS=[
 let active='Semua';
 function rupiah(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','')}
 function esc(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function setActive(v){active=v;render()}
+function setActive(v){
+ active=v;
+ const buttons=document.querySelectorAll('#filters .filter');
+ buttons.forEach(b=>b.classList.toggle('active',b.dataset.series===v));
+ renderMenu();
+}
 function renderFilters(){
  const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];
- document.getElementById('filters').innerHTML=all.map(s=>'<button class="filter '+(active===s?'active':'')+'" onclick="setActive('+JSON.stringify(s)+')">'+esc(s)+'</button>').join('');
+ document.getElementById('filters').innerHTML=all.map(s=>'<button type="button" class="filter '+(active===s?'active':'')+'" data-series="'+esc(s)+'">'+esc(s)+'</button>').join('');
+ document.querySelectorAll('#filters .filter').forEach(btn=>btn.addEventListener('click',()=>setActive(btn.dataset.series)));
+}
+function renderMenu(){
+ const q=(document.getElementById('search').value||'').toLowerCase().trim();
+ const arr=PRODUCTS.filter(p=>(active==='Semua'||p.series===active)&&(!q||p.name.toLowerCase().includes(q)));
+ const grouped={};
+ arr.forEach(p=>(grouped[p.series]??=[]).push(p));
+ const order=['Food','Tea Series','Milk Base','Coffee Base','Mocktail','Paket Combo'];
+ document.getElementById('menu').innerHTML=order.filter(s=>grouped[s]?.length).map(s=>{
+   const special=s==='Paket Combo';
+   return '<section class="section"><div class="section-head"><span>'+esc(s)+'</span><span>'+grouped[s].length+' menu</span></div><div class="items">'+grouped[s].map(p=>
+   '<div class="item '+(special?'highlight':'')+'"><div><div class="item-name">'+esc(p.name)+'</div><div class="meta">Size: '+esc(p.size)+'</div></div><div class="price">'+rupiah(p.price)+'</div></div>'
+   ).join('')+'</div></section>';
+ }).join('') || '<div class="section"><div class="empty">Menu tidak ditemukan.</div></section>';
 }
 function render(){
  renderFilters();
