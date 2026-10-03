@@ -33,7 +33,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 <img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="intuisi.teh Indonesia">
 <div><h1>Kasir Intuisi Shop</h1><div class="sub">Menu • Penjualan • Pembayaran</div></div>
 </div>
-<div class="actions"><button class="btn2" onclick="scrollHistory()">Riwayat</button><button class="btn2" onclick="showReport()">Laporan</button><button class="btn2" onclick="backup()">Backup</button></div>
+<div class="actions"><button class="btn2" onclick="scrollHistory()">Riwayat</button><button class="btn2" onclick="showReport()">Laporan</button><button class="btn2" onclick="backup()">Backup</button><button class="btn2" onclick="document.getElementById('restoreFile').click()">Restore</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)"> </div>
 </div>
 </header>
 
@@ -226,6 +226,28 @@ function showReport(){
  document.getElementById('modal').style.display='flex';
 }
 function backup(){const a=document.createElement('a'),b=new Blob([JSON.stringify(load(),null,2)],{type:'application/json'});a.href=URL.createObjectURL(b);a.download='backup-kasir-intuisi-shop-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function restoreBackup(input){
+ const file=input.files&&input.files[0];
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=function(){
+   try{
+     const data=JSON.parse(reader.result);
+     if(!Array.isArray(data))throw new Error('Format backup tidak valid');
+     const valid=data.every(s=>s&&typeof s==='object'&&Array.isArray(s.items)&&typeof s.total==='number'&&s.time);
+     if(!valid)throw new Error('Struktur data backup tidak sesuai');
+     if(!confirm('Restore backup akan mengganti data transaksi saat ini. Lanjutkan?')){input.value='';return}
+     localStorage.setItem(KEY,JSON.stringify(data));
+     alert('Backup berhasil dipulihkan.');
+     renderHistory();renderStats();
+     input.value='';
+   }catch(e){
+     alert('Gagal restore: '+e.message);
+     input.value='';
+   }
+ };
+ reader.readAsText(file);
+}
 function scrollHistory(){document.getElementById('historySection').scrollIntoView({behavior:'smooth'})}
 init();
 </script>
