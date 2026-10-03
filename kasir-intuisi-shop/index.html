@@ -11,17 +11,17 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 .wrap{max-width:1250px;margin:auto;padding:14px 18px}.head{display:flex;justify-content:space-between;align-items:center;gap:18px}
 .brand{display:flex;align-items:center;gap:14px}.brand img{width:190px;height:72px;object-fit:contain;background:#fff;border-radius:11px;padding:4px;border:2px solid rgba(255,255,255,.65)}.brand h1{margin:0;font-size:23px}.brand .sub{margin-top:4px;font-size:12px;color:var(--yellow);font-weight:800}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.btn,.btn2,.danger{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}.btn{background:var(--yellow);color:#17342a}.btn2{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.2)}.danger{background:#fbe8e6;color:#9b211b}
-.layout{display:grid;grid-template-columns:1.55fr .9fr;gap:18px;padding:18px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 10px 28px rgba(20,60,45,.07);overflow:hidden}.card h2{margin:0;padding:14px 16px;background:var(--green2);color:#fff;font-size:16px}.pad{padding:16px}
-.search{display:grid;grid-template-columns:1fr 180px;gap:10px;margin-bottom:12px}input,select{width:100%;padding:11px 12px;border:1px solid #cbd9d2;border-radius:10px;background:#fff;font-size:14px;outline:none}
-.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.tab{border:0;border-radius:999px;padding:9px 12px;background:#edf4ef;color:var(--green2);font-weight:800;cursor:pointer}.tab.active{background:var(--green);color:#fff}
-.series-block{margin-bottom:16px}.series-label{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--green2);color:#fff;border-radius:12px 12px 0 0;padding:10px 12px;font-weight:900}.size-group{margin:10px 0 12px;border:1px solid var(--line);border-radius:14px;background:#fbfdfb;overflow:hidden}.size-title{display:flex;align-items:center;gap:9px;padding:9px 12px;background:#f0f6f2;border-bottom:1px solid var(--line)}.size-pill{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:6px 10px;border-radius:999px;background:var(--green);color:#fff;font-weight:900;font-size:12px}.size-note{font-size:12px;color:var(--muted);font-weight:700}.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}.product{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fff}.name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}.price{font-weight:900;color:var(--green);margin-top:4px}.badge{display:inline-block;font-size:11px;margin-left:5px;color:#b07b00;background:#fff4b8;border-radius:999px;padding:3px 6px;font-weight:900}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:14px;padding:14px;max-width:1450px;min-height:calc(100vh - 104px);align-items:start}.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 28px rgba(20,60,45,.07);overflow:hidden}.card h2{margin:0;padding:13px 15px;background:var(--green2);color:#fff;font-size:15px}.pad{padding:13px}.order-card{position:sticky;top:92px;max-height:calc(100vh - 106px);display:flex;flex-direction:column}.order-card .pad{overflow:auto}.menu-card{min-width:0}.hidden-select{display:none!important}
+.search{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:8px;margin-bottom:10px}input,select{width:100%;padding:10px 11px;border:1px solid #cbd9d2;border-radius:10px;background:#fff;font-size:14px;outline:none}
+.tabs,.size-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.tab,.size-tab{border:0;border-radius:999px;padding:8px 11px;background:#edf4ef;color:var(--green2);font-weight:800;cursor:pointer;white-space:nowrap}.tab.active{background:var(--green);color:#fff}.size-tab{background:#fff;border:1px solid var(--line)}.size-tab.active{background:#17342a;color:#fff;border-color:#17342a}
+.series-block{margin-bottom:10px}.series-label{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--green2);color:#fff;border-radius:12px 12px 0 0;padding:10px 12px;font-weight:900}.size-group{margin:10px 0 12px;border:1px solid var(--line);border-radius:14px;background:#fbfdfb;overflow:hidden}.size-title{display:flex;align-items:center;gap:9px;padding:9px 12px;background:#f0f6f2;border-bottom:1px solid var(--line)}.size-pill{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:6px 10px;border-radius:999px;background:var(--green);color:#fff;font-weight:900;font-size:12px}.size-note{font-size:12px;color:var(--muted);font-weight:700}.products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:10px}.product{border:1px solid var(--line);border-radius:12px;padding:0;display:flex;flex-direction:column;justify-content:space-between;gap:8px;align-items:stretch;background:#fff;overflow:hidden;min-height:155px}.tile-thumb{height:72px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#eef7f1,#dcefe4);font-size:34px}.tile-body{padding:0 10px 10px}.product .btn{width:100%;padding:8px}.name{font-weight:800;line-height:1.25}.meta{font-size:11px;color:var(--muted);margin-top:4px}.price{font-weight:900;color:var(--green);margin-top:4px}.badge{display:inline-block;font-size:10px;margin-bottom:4px;color:#b07b00;background:#fff4b8;border-radius:999px;padding:3px 6px;font-weight:900}
 .cart{display:flex;flex-direction:column;gap:9px;max-height:420px;overflow:auto;margin-top:10px}.item{border:1px solid var(--line);border-radius:12px;padding:11px}.row{display:flex;justify-content:space-between;gap:10px}.qty{display:flex;gap:6px;align-items:center;margin-top:8px}.qty button{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:#edf3ef;font-weight:900;cursor:pointer}
 .totalbox{margin-top:14px;padding:14px;background:#eef7f1;border-radius:12px}.tot{display:flex;justify-content:space-between;margin:6px 0}.grand{font-size:20px;font-weight:900}
 .pay{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.paybox{border:1px solid var(--line);border-radius:10px;padding:11px;cursor:pointer}.paybox.active{border:2px solid var(--green);background:#eef8f3}.paybox input{width:auto;margin-right:5px}
 .qris{display:none;text-align:center;margin-top:12px}.qris img{max-width:230px;width:100%;border-radius:12px;border:1px solid var(--line)}
 .section{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;margin-top:5px;font-size:18px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.filters>*{max-width:220px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#f6faf7}.empty{text-align:center;padding:22px;color:var(--muted)}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:30;align-items:center;justify-content:center;padding:20px}.modalbox{width:min(560px,100%);background:#fff;border-radius:16px;padding:18px}.receipt{font:12px/1.45 monospace}.receipt hr{border:0;border-top:1px dashed #999}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}}
+@media(max-width:1100px){.products{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:900px){.layout{grid-template-columns:1fr}.order-card{position:static;max-height:none}.products{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.brand img{width:165px;height:64px}.search{grid-template-columns:1fr}.products{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.pay{grid-template-columns:1fr 1fr}.size-pill{min-width:54px}.series-label{font-size:14px}}
 @media print{header,.no-print{display:none!important}.modal{position:static;background:#fff;padding:0}.modalbox{box-shadow:none;border:0}.receipt{font-size:11px}}
 </style>
@@ -38,22 +38,26 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 </header>
 
 <main class="wrap layout no-print">
-<section class="card"><h2>Daftar Menu</h2><div class="pad">
-<div class="search"><input id="search" placeholder="Cari menu..." oninput="renderProducts()"><select id="seriesSelect" onchange="setSeries(this.value)"></select></div>
-<div id="tabs" class="tabs"></div><div id="products" class="products"></div>
-</div></section>
-
-<section class="card"><h2>Pesanan</h2><div class="pad">
+<section class="card order-card">
+<h2>Pesanan</h2><div class="pad">
 <label>Nama Pembeli</label><input id="buyer" placeholder="Nama pembeli (opsional)">
-<label style="display:block;font-size:12px;font-weight:800;margin:12px 0 6px">Metode Pembayaran</label>
+<label>Metode Pembayaran</label>
 <div id="payments" class="pay"></div>
-<div id="cashBox"><label style="display:block;font-size:12px;font-weight:800;margin:12px 0 6px">Uang Diterima</label><input id="cash" type="number" min="0" placeholder="0" oninput="renderCart()"></div>
+<div id="cashBox"><label>Uang Diterima</label><input id="cash" type="number" min="0" placeholder="0" oninput="renderCart()"></div>
 <div id="qrisBox" class="qris"><div class="meta">Scan QRIS untuk pembayaran.</div><img src="https://cdn.phototourl.com/member/2026-09-29-0c428922-e3b2-440f-b86f-0b7839b3ef9e.jpg" alt="QRIS"></div>
 <div id="cart" class="cart"></div>
 <div class="totalbox"><div class="tot"><span>Subtotal</span><b id="subtotal">Rp 0</b></div><div id="changeRow" class="tot"><span>Kembalian</span><b id="change">Rp 0</b></div><div class="tot grand"><span>Total</span><b id="total">Rp 0</b></div></div>
 <button class="btn" style="width:100%;margin-top:10px" onclick="saveSale()">Simpan Transaksi</button>
 <button class="btn2" style="width:100%;margin-top:8px;background:#edf3ef;color:#18342a;border-color:transparent" onclick="clearCart()">Kosongkan</button>
-<div class="meta" style="margin-top:10px">WhatsApp: 0857 2667 7641 • Instagram: intuisi.teh indonesia</div>
+<div class="meta" style="margin-top:10px">WhatsApp: 0857 2667 7641</div>
+</div></section>
+
+<section class="card menu-card">
+<h2>Daftar Menu</h2><div class="pad">
+<div class="search"><input id="search" placeholder="Cari menu..." oninput="renderProducts()"><select id="seriesSelect" class="hidden-select"></select></div>
+<div id="tabs" class="tabs"></div>
+<div id="sizeTabs" class="size-tabs"></div>
+<div id="products" class="products"></div>
 </div></section>
 </main>
 
@@ -139,7 +143,7 @@ const BEST={
 'New Product':new Set(['Caramel Macchiato'])
 };
 const PAYMENTS=['Cash','QRIS','GoFood','GrabFood','Shopee Food'];
-let cart=[],payment='Cash',activeSeries='Semua';
+let cart=[],payment='Cash',activeSeries='Semua',activeSize='Semua';
 const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','');
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}};
@@ -150,7 +154,7 @@ function init(){
  document.getElementById('seriesSelect').innerHTML='<option>Semua</option>'+series.map(s=>'<option>'+esc(s)+'</option>').join('');
  document.getElementById('historyPayment').innerHTML='<option value="">Semua Pembayaran</option>'+PAYMENTS.map(p=>'<option>'+esc(p)+'</option>').join('');
  document.getElementById('payments').innerHTML=PAYMENTS.map(p=>'<div class="paybox '+(p==='Cash'?'active':'')+'" data-pay="'+esc(p)+'" onclick="setPayment(\''+p+'\',this)"><input type="radio" name="payment" '+(p==='Cash'?'checked':'')+'> '+esc(p)+'</div>').join('');
- document.getElementById('historyDate').value=today();renderTabs();renderProducts();renderCart();renderHistory();renderStats();
+ document.getElementById('historyDate').value=today();renderTabs();renderSizeTabs();renderProducts();renderCart();renderHistory();renderStats();
 }
 function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
 function renderTabs(){
@@ -158,6 +162,12 @@ function renderTabs(){
  const tabs=document.getElementById('tabs');
  tabs.innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" data-series="'+esc(s)+'">'+esc(s)+'</button>').join('');
  tabs.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>setSeries(btn.dataset.series)));
+}
+function setSize(v){activeSize=v;renderSizeTabs();renderProducts()}
+function renderSizeTabs(){
+ const sizes=['Semua','STD','S','M','L'];
+ const el=document.getElementById('sizeTabs');
+ el.innerHTML=sizes.map(s=>'<button type="button" class="size-tab '+(activeSize===s?'active':'')+'" onclick="setSize('+JSON.stringify(s)+')">'+esc(s==='Semua'?'Semua Size':'Size '+s)+'</button>').join('');
 }
 function sizeOrder(a,b){
  const order={'STD':0,'S':1,'M':2,'L':3,'Yakult':1,'Yoghurt Breeze':2};
@@ -178,16 +188,28 @@ function renderSeriesBlock(series, products){
    return '<div class="size-group"><div class="size-title"><span class="size-pill">'+esc(label)+'</span><span class="size-note">'+list.length+' pilihan</span></div><div class="products">'+list.map(renderProductCard).join('')+'</div></div>';
  }).join('')+'</div>';
 }
+function iconFor(series){
+ if(series==='Tea Series') return '🍵';
+ if(series==='Milk Base') return '🥤';
+ if(series==='Coffee Latte') return '☕';
+ if(series==='New Product') return '✨';
+ if(series==='Signature Intuisi Teh') return '🍓';
+ if(series==='Mocktail') return '🍹';
+ return '🍽️';
+}
 function renderProducts(){
  const q=(document.getElementById('search').value||'').toLowerCase().trim();
- const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q)));
- const grouped={};
- arr.forEach(p=>(grouped[p.series]??=[]).push(p));
- const order=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
- document.getElementById('products').innerHTML=order.filter(s=>grouped[s]?.length)
-   .map(s=>renderSeriesBlock(s,grouped[s]))
-   .join('') || '<div class="empty">Menu tidak ditemukan.</div>';
+ const arr=PRODUCTS.filter(p=>
+   (activeSeries==='Semua'||p.series===activeSeries) &&
+   (activeSize==='Semua'||p.size===activeSize) &&
+   (!q||p.name.toLowerCase().includes(q))
+ ).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name)||a.size.localeCompare(b.size));
+ document.getElementById('products').innerHTML=arr.length?arr.map(p=>{
+   const best=BEST[p.series]?.has(p.name);
+   return '<div class="product"><div class="tile-thumb">'+iconFor(p.series)+'</div><div class="tile-body"><div class="name">'+(best?'<span class="badge">★ BEST SELLER</span><br>':'')+esc(p.name)+'</div><div class="meta">'+esc(p.series)+' • Size '+esc(p.size)+'</div><div class="price">'+rupiah(p.price)+'</div><button class="btn" onclick="add('+p.id+')">Tambah</button></div></div>'
+ }).join(''):'<div class="empty">Menu tidak ditemukan.</div>';
 }
+
 function add(id){const p=PRODUCTS.find(x=>x.id===id),f=cart.find(x=>x.id===id);if(f)f.qty++;else cart.push({...p,qty:1});renderCart()}
 function changeQty(id,d){const f=cart.find(x=>x.id===id);if(!f)return;f.qty+=d;if(f.qty<=0)cart=cart.filter(x=>x.id!==id);renderCart()}
 function clearCart(){cart=[];document.getElementById('cash').value='';renderCart()}
