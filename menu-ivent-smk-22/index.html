@@ -31,7 +31,7 @@ a{text-decoration:none;color:inherit}
 .section-head{padding:13px 16px;background:linear-gradient(90deg,var(--green-dark),var(--green));color:#fff;font-weight:900;font-size:17px;display:flex;justify-content:space-between;gap:12px}
 .section-head span:last-child{color:var(--yellow)}
 .items{padding:8px 14px 10px}
-.item{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:12px 2px;border-bottom:1px dashed var(--line)}
+.item{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:12px 2px;border-bottom:1px dashed var(--line)}.star{display:inline-block;color:#e5af00;font-size:18px;line-height:1;margin-right:6px;text-shadow:0 1px 1px rgba(0,0,0,.12)}
 .item:last-child{border-bottom:0}
 .item-name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}
 .price{font-weight:900;color:var(--green);white-space:nowrap}
@@ -124,6 +124,12 @@ function renderFilters(){
  document.getElementById('filters').innerHTML=all.map(s=>'<button type="button" class="filter '+(active===s?'active':'')+'" data-series="'+esc(s)+'">'+esc(s)+'</button>').join('');
  document.querySelectorAll('#filters .filter').forEach(btn=>btn.addEventListener('click',()=>setActive(btn.dataset.series)));
 }
+const BEST_SELLERS={
+ Food:new Set(['Mix Platter']),
+ 'Tea Series':new Set(['Thai Tea','Mango Tea']),
+ 'Coffee Base':new Set(['Aren Latte']),
+ 'Milk Base':new Set(['Macha'])
+};
 function renderMenu(){
  const q=(document.getElementById('search').value||'').toLowerCase().trim();
  const arr=PRODUCTS.filter(p=>(active==='Semua'||p.series===active)&&(!q||p.name.toLowerCase().includes(q))).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name));
@@ -132,9 +138,10 @@ function renderMenu(){
  const order=['Food','Tea Series','Milk Base','Coffee Base','Mocktail','Paket Combo'];
  document.getElementById('menu').innerHTML=order.filter(s=>grouped[s]?.length).map(s=>{
    const special=s==='Paket Combo';
-   return '<section class="section"><div class="section-head"><span>'+esc(s)+'</span><span>'+grouped[s].length+' menu</span></div><div class="items">'+grouped[s].map(p=>
-   '<div class="item '+(special?'highlight':'')+'"><div><div class="item-name">'+esc(p.name)+'</div><div class="meta">Size: '+esc(p.size)+'</div></div><div class="price">'+rupiah(p.price)+'</div></div>'
-   ).join('')+'</div></section>';
+   return '<section class="section"><div class="section-head"><span>'+esc(s)+'</span><span>'+grouped[s].length+' menu</span></div><div class="items">'+grouped[s].map(p=>{
+     const best=BEST_SELLERS[s]?.has(p.name);
+     return '<div class="item '+(special?'highlight':'')+'"><div><div class="item-name">'+(best?'<span class="star" title="Best Seller" aria-label="Best Seller">★</span>':'')+esc(p.name)+'</div><div class="meta">Size: '+esc(p.size)+'</div></div><div class="price">'+rupiah(p.price)+'</div></div>';
+   }).join('')+'</div></section>';
  }).join('') || '<div class="section"><div class="empty">Menu tidak ditemukan.</div></section>';
 }
 function render(){
