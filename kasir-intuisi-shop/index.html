@@ -154,7 +154,12 @@ function init(){
  document.getElementById('historyDate').value=today();renderTabs();renderProducts();renderCart();renderHistory();renderStats();
 }
 function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
-function renderTabs(){const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" onclick="setSeries('+JSON.stringify(s)+')">'+esc(s)+'</button>').join('')}
+function renderTabs(){
+ const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];
+ const tabs=document.getElementById('tabs');
+ tabs.innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" data-series="'+esc(s)+'">'+esc(s)+'</button>').join('');
+ tabs.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>setSeries(btn.dataset.series)));
+}
 function renderProducts(){
  const q=(document.getElementById('search').value||'').toLowerCase().trim();
  const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q))).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name)||a.size.localeCompare(b.size));
