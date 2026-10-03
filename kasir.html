@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kasir Ivent Formasda</title>
+<style>
+:root{
+ --green:#0e6b45;--green2:#084f34;--light:#f4f8f5;--card:#fff;--ink:#17342a;
+ --muted:#6b7d74;--line:#dce7e1;--yellow:#ffd84d;--danger:#c6362c;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--light);color:var(--ink)}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--green2),var(--green));color:#fff;box-shadow:0 5px 18px rgba(0,0,0,.12)}
+.wrap{max-width:1200px;margin:auto;padding:14px 18px}.head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:14px}.brand img{width:190px;height:72px;object-fit:contain;background:#fff;border-radius:10px;padding:4px;border:2px solid rgba(255,255,255,.65)}
+.brand h1{margin:0;font-size:22px;line-height:1.1}.brand .sub{margin-top:4px;color:#ffe36a;font-weight:700;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn,.btn-light,.btn-danger{border:0;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer}
+.btn{background:var(--yellow);color:#17342a}.btn-light{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.btn-danger{background:#fbe9e7;color:#9f2119}
+.layout{display:grid;grid-template-columns:1.45fr .9fr;gap:18px;padding:18px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 26px rgba(20,60,45,.07);overflow:hidden}
+.card h2{font-size:16px;margin:0;padding:15px 16px;background:var(--green2);color:#fff;border-bottom:1px solid rgba(255,255,255,.18)}.pad{padding:16px}
+.search{display:grid;grid-template-columns:1fr 170px;gap:10px;margin-bottom:12px}input,select{width:100%;padding:11px 12px;border:1px solid #cfdcd5;border-radius:10px;font-size:14px;background:#fff;outline:none}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.tab{border:0;border-radius:999px;padding:9px 12px;background:#edf5f0;color:var(--green2);font-weight:700;cursor:pointer}.tab.active{background:var(--green);color:#fff}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}.price{font-size:13px;color:var(--green);font-weight:800;margin-top:3px}.product .btn{padding:8px 10px;white-space:nowrap}
+label{display:block;font-size:12px;font-weight:800;margin:12px 0 6px}.pay{display:grid;grid-template-columns:1fr 1fr;gap:10px}.paybox{border:1px solid var(--line);border-radius:10px;padding:11px;cursor:pointer}.paybox.active{border:2px solid var(--green);background:#eef8f3}.paybox input{width:auto}
+.qris{display:none;text-align:center;margin-top:12px}.qris img{width:min(230px,100%);border-radius:12px;border:1px solid var(--line)}
+.cart{display:flex;flex-direction:column;gap:10px;max-height:410px;overflow:auto;margin-top:10px}.item{border:1px solid var(--line);border-radius:12px;padding:11px}.row{display:flex;justify-content:space-between;gap:10px}.qty{display:flex;align-items:center;gap:6px;margin-top:9px}.qty button{width:30px;height:30px;border:0;border-radius:8px;background:#edf3ef;font-weight:800;cursor:pointer}
+.totalbox{margin-top:14px;padding:14px;background:#f0f7f3;border-radius:12px}.totline{display:flex;justify-content:space-between;margin:6px 0}.grand{font-size:19px;font-weight:900}.full{width:100%;margin-top:10px}.note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
+.section{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fbfdfc}.stat span{display:block;color:var(--muted);font-size:12px}.stat b{display:block;margin-top:6px;font-size:19px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.filters>*{max-width:220px} .tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#f7faf8}
+.empty{text-align:center;padding:20px;color:var(--muted)}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);align-items:center;justify-content:center;padding:20px;z-index:30}.modalbox{background:#fff;width:min(520px,100%);border-radius:16px;padding:18px}.receipt{font:12px/1.45 monospace}.receipt hr{border:0;border-top:1px dashed #999}
+.hidden{display:none!important}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.brand img{width:165px;height:64px}.search{grid-template-columns:1fr}.products{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+@media print{header,.no-print{display:none!important}.modal{position:static;background:#fff;padding:0}.modalbox{box-shadow:none;border:0}.receipt{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap head">
+  <div class="brand">
+    <img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="Logo">
+    <div><h1>Kasir Ivent Formasda</h1><div class="sub">Kasir Event • Menu & Harga Terbaru</div></div>
+  </div>
+  <div class="actions"><button class="btn-light" onclick="scrollToHistory()">Riwayat</button><button class="btn-light" onclick="showReport()">Laporan</button><button class="btn-light" onclick="backup()">Backup</button></div>
+</div>
+</header>
+
+<main class="wrap layout no-print">
+<section class="card">
+<h2>Daftar Menu</h2><div class="pad">
+<div class="search"><input id="search" placeholder="Cari menu..." oninput="renderProducts()"><select id="seriesSelect" onchange="setSeries(this.value)"></select></div>
+<div id="tabs" class="tabs"></div><div id="products" class="products"></div>
+</div></section>
+
+<section class="card">
+<h2>Pesanan</h2><div class="pad">
+<label>Nama Pembeli</label><input id="buyer" placeholder="Nama pembeli (opsional)">
+<label>Channel</label><select id="channel"><option>Event</option><option>WhatsApp</option><option>GoFood</option><option>Shopee Food</option><option>GrabFood</option></select>
+<label>Metode Pembayaran</label>
+<div class="pay"><div class="paybox active" onclick="setPayment('Cash',this)"><input type="radio" checked> Cash</div><div class="paybox" onclick="setPayment('QRIS',this)"><input type="radio"> QRIS</div></div>
+<div id="cashBox"><label>Uang Diterima</label><input id="cash" type="number" min="0" placeholder="0" oninput="renderCart()"></div>
+<div id="qrisBox" class="qris"><div class="note">Silakan scan QRIS untuk pembayaran.</div><img src="https://cdn.phototourl.com/member/2026-09-29-0c428922-e3b2-440f-b86f-0b7839b3ef9e.jpg" alt="QRIS"></div>
+<div id="cart" class="cart"></div>
+<div class="totalbox"><div class="totline"><span>Subtotal</span><b id="subtotal">Rp 0</b></div><div id="changeRow" class="totline"><span>Kembalian</span><b id="change">Rp 0</b></div><div class="totline grand"><span>Total</span><b id="total">Rp 0</b></div></div>
+<button class="btn full" onclick="saveSale()">Simpan Transaksi</button><button class="btn-light full" style="background:#edf3ef;color:#18342a" onclick="clearCart()">Kosongkan</button>
+<div class="note">Kontak WhatsApp: <b>0857 2667 7641</b></div>
+</div></section>
+</main>
+
+<section id="historySection" class="wrap section no-print"><div class="card"><h2>Riwayat Transaksi</h2><div class="pad">
+<div id="stats" class="stats"></div>
+<div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyChannel" onchange="renderHistory()"><option value="">Semua Channel</option><option>Event</option><option>WhatsApp</option><option>GoFood</option><option>Shopee Food</option><option>GrabFood</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"></div>
+<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Pembeli</th><th>Channel</th><th>Pembayaran</th><th>Item</th><th>Total</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
+</div></div></section>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><div id="modalContent"></div><div class="no-print" style="display:flex;gap:8px;margin-top:14px"><button class="btn" onclick="window.print()">Cetak</button><button class="btn-light" style="background:#edf3ef;color:#18342a" onclick="closeModal()">Tutup</button></div></div></div>
+
+<script>
+const KEY='kasir_ivent_formasda_2026_v1';
+const PRODUCTS=[
+['French Fries','STD',18000,'Food'],
+['Nugget','STD',23000,'Food'],
+['Mix Platter','STD',35000,'Food'],
+['Intuisi Tea','STD',10000,'Tea Series'],
+['Thai Tea','STD',20000,'Tea Series'],
+['Green Tea','STD',15000,'Tea Series'],
+['Milk Tea','STD',18000,'Tea Series'],
+['Mango Tea','STD',15000,'Tea Series'],
+['Lychee Tea','STD',15000,'Tea Series'],
+['Macha','M',25000,'Milk Base'],
+['Choco Milo','M',23000,'Milk Base'],
+['Oreo','M',25000,'Milk Base'],
+['Amerikano','M',18000,'Coffee Base'],
+['Intuisi Latte','M',20000,'Coffee Base'],
+['Spanish Latte','M',23000,'Coffee Base'],
+['Aren Latte','M',23000,'Coffee Base'],
+['Butterscotch Latte','M',25000,'Coffee Base'],
+['Salted Caramel','M',28000,'Coffee Base'],
+['Blue Ocean','M',20000,'Mocktail'],
+['Mango Squash','M',20000,'Mocktail'],
+['Lychee Squash','M',20000,'Mocktail'],
+['Combo Big Twins (2 French Fries + Jasmine)','STD',35000,'Paket Combo']
+].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3]}));
+let cart=[],payment='Cash',activeSeries='Semua';
+const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','');
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}};
+const save=s=>localStorage.setItem(KEY,JSON.stringify(s));
+function today(){return new Date().toISOString().slice(0,10)}
+function init(){
+ const series=[...new Set(PRODUCTS.map(p=>p.series))];
+ document.getElementById('seriesSelect').innerHTML='<option>Semua</option>'+series.map(s=>'<option>'+esc(s)+'</option>').join('');
+ document.getElementById('historyDate').value=today();renderTabs();renderProducts();renderCart();renderHistory();renderStats();
+}
+function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
+function renderTabs(){const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button class="tab '+(activeSeries===s?'active':'')+'" onclick="setSeries('+JSON.stringify(s)+')">'+esc(s)+'</button>').join('')}
+function renderProducts(){
+ const q=(document.getElementById('search').value||'').toLowerCase().trim();
+ const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q)));
+ document.getElementById('products').innerHTML=arr.length?arr.map(p=>'<div class="product"><div><div class="name">'+esc(p.name)+'</div><div class="meta">'+esc(p.series)+' • '+esc(p.size)+'</div><div class="price">'+rupiah(p.price)+'</div></div><button class="btn" onclick="add('+p.id+')">Tambah</button></div>').join(''):'<div class="empty">Menu tidak ditemukan.</div>';
+}
+function add(id){const p=PRODUCTS.find(x=>x.id===id),f=cart.find(x=>x.id===id);if(f)f.qty++;else cart.push({...p,qty:1});renderCart()}
+function qty(id,d){const f=cart.find(x=>x.id===id);if(!f)return;f.qty+=d;if(f.qty<=0)cart=cart.filter(x=>x.id!==id);renderCart()}
+function clearCart(){cart=[];document.getElementById('cash').value='';renderCart()}
+function total(){return cart.reduce((n,x)=>n+x.price*x.qty,0)}
+function renderCart(){
+ const el=document.getElementById('cart');el.innerHTML=cart.length?cart.map(x=>'<div class="item"><div class="row"><div><div class="name">'+esc(x.name)+'</div><div class="meta">'+x.size+' • '+rupiah(x.price)+'</div></div><b>'+rupiah(x.price*x.qty)+'</b></div><div class="row"><div class="qty"><button onclick="qty('+x.id+',-1)">−</button><b>'+x.qty+'</b><button onclick="qty('+x.id+',1)">+</button></div><button class="btn-danger" onclick="qty('+x.id+',-'+x.qty+')">Hapus</button></div></div>').join(''):'<div class="empty">Keranjang masih kosong.</div>';
+ const t=total(),cash=Number(document.getElementById('cash').value||0);document.getElementById('subtotal').textContent=rupiah(t);document.getElementById('total').textContent=rupiah(t);document.getElementById('change').textContent=rupiah(Math.max(0,cash-t));document.getElementById('changeRow').style.display=payment==='Cash'?'flex':'none';
+}
+function setPayment(v,el){payment=v;document.querySelectorAll('.paybox').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.getElementById('cashBox').style.display=v==='Cash'?'block':'none';document.getElementById('qrisBox').style.display=v==='QRIS'?'block':'none';renderCart()}
+function saveSale(){
+ if(!cart.length)return alert('Keranjang masih kosong.');
+ const t=total(),cash=Number(document.getElementById('cash').value||0);if(payment==='Cash'&&cash<t)return alert('Uang diterima masih kurang.');
+ const sale={id:Date.now(),time:new Date().toISOString(),buyer:(document.getElementById('buyer').value||'Umum').trim(),channel:document.getElementById('channel').value,payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
+ const sales=load();sales.push(sale);save(sales);showReceipt(sale);clearCart();document.getElementById('buyer').value='';renderHistory();renderStats();
+}
+function showReceipt(s){
+ const dt=new Date(s.time);let lines=s.items.map(i=>esc(i.name)+' x'+i.qty+' '+rupiah(i.price*i.qty)).join('<br>');
+ document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR IVENT FORMASDA</b><br>Struk Penjualan</div><hr>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Channel: '+esc(s.channel)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+lines+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div>';
+ document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function showReceiptById(id){const s=load().find(x=>x.id===id);if(s)showReceipt(s)}
+function renderHistory(){
+ const date=document.getElementById('historyDate').value,ch=document.getElementById('historyChannel').value,q=(document.getElementById('historySearch').value||'').toLowerCase();
+ const sales=load().filter(s=>(!date||s.time.slice(0,10)===date)&&(!ch||s.channel===ch)&&(!q||s.buyer.toLowerCase().includes(q))).sort((a,b)=>b.id-a.id);
+ document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.channel)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn" onclick="showReceiptById('+s.id+')">Struk</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>';
+}
+function renderStats(){
+ const sales=load(),d=today(),tod=sales.filter(s=>s.time.slice(0,10)===d),omz=tod.reduce((n,s)=>n+s.total,0),items=tod.reduce((n,s)=>n+s.items.reduce((m,i)=>m+i.qty,0),0),avg=tod.length?Math.round(omz/tod.length):0;
+ document.getElementById('stats').innerHTML='<div class="stat"><span>Transaksi hari ini</span><b>'+tod.length+'</b></div><div class="stat"><span>Omzet hari ini</span><b>'+rupiah(omz)+'</b></div><div class="stat"><span>Item terjual</span><b>'+items+'</b></div><div class="stat"><span>Rata-rata transaksi</span><b>'+rupiah(avg)+'</b></div>';
+}
+function showReport(){
+ const sales=load(),map={};sales.forEach(s=>s.items.forEach(i=>{const p=PRODUCTS.find(x=>x.name===i.name&&x.size===i.size);const k=p?p.series:'Lainnya';map[k]=(map[k]||0)+i.qty}));
+ const rows=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v+'</td></tr>').join('');
+ document.getElementById('modalContent').innerHTML='<h3 style="margin-top:0">Laporan Penjualan per Series</h3><div class="tablewrap"><table><thead><tr><th>Series</th><th>Item Terjual</th></tr></thead><tbody>'+ (rows||'<tr><td colspan="2" class="empty">Belum ada data.</td></tr>') +'</tbody></table></div>';document.getElementById('modal').style.display='flex';
+}
+function backup(){const blob=new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-kasir-ivent-formasda-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function scrollToHistory(){document.getElementById('historySection').scrollIntoView({behavior:'smooth'})}
+init();
+</script>
+</body>
+</html>
