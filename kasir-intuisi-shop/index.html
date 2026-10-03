@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kasir Intuisi Shop</title>
+<style>
+:root{--green:#0c6a43;--green2:#06492e;--soft:#eef7f1;--ink:#17342a;--muted:#6d7d75;--line:#dbe7e0;--yellow:#ffd84a;--danger:#bb2b24}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f8f5;color:var(--ink)}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--green2),var(--green));color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.wrap{max-width:1250px;margin:auto;padding:14px 18px}.head{display:flex;justify-content:space-between;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:14px}.brand img{width:190px;height:72px;object-fit:contain;background:#fff;border-radius:11px;padding:4px;border:2px solid rgba(255,255,255,.65)}.brand h1{margin:0;font-size:23px}.brand .sub{margin-top:4px;font-size:12px;color:var(--yellow);font-weight:800}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn,.btn2,.danger{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}.btn{background:var(--yellow);color:#17342a}.btn2{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.2)}.danger{background:#fbe8e6;color:#9b211b}
+.layout{display:grid;grid-template-columns:1.55fr .9fr;gap:18px;padding:18px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 10px 28px rgba(20,60,45,.07);overflow:hidden}.card h2{margin:0;padding:14px 16px;background:var(--green2);color:#fff;font-size:16px}.pad{padding:16px}
+.search{display:grid;grid-template-columns:1fr 180px;gap:10px;margin-bottom:12px}input,select{width:100%;padding:11px 12px;border:1px solid #cbd9d2;border-radius:10px;background:#fff;font-size:14px;outline:none}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.tab{border:0;border-radius:999px;padding:9px 12px;background:#edf4ef;color:var(--green2);font-weight:800;cursor:pointer}.tab.active{background:var(--green);color:#fff}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.product{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.name{font-weight:800;line-height:1.25}.meta{font-size:12px;color:var(--muted);margin-top:4px}.price{font-weight:900;color:var(--green);margin-top:4px}
+.badge{display:inline-block;font-size:11px;margin-left:5px;color:#b07b00;background:#fff4b8;border-radius:999px;padding:3px 6px;font-weight:900}
+.cart{display:flex;flex-direction:column;gap:9px;max-height:420px;overflow:auto;margin-top:10px}.item{border:1px solid var(--line);border-radius:12px;padding:11px}.row{display:flex;justify-content:space-between;gap:10px}.qty{display:flex;gap:6px;align-items:center;margin-top:8px}.qty button{width:30px;height:30px;padding:0;border:0;border-radius:8px;background:#edf3ef;font-weight:900;cursor:pointer}
+.totalbox{margin-top:14px;padding:14px;background:#eef7f1;border-radius:12px}.tot{display:flex;justify-content:space-between;margin:6px 0}.grand{font-size:20px;font-weight:900}
+.pay{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.paybox{border:1px solid var(--line);border-radius:10px;padding:11px;cursor:pointer}.paybox.active{border:2px solid var(--green);background:#eef8f3}.paybox input{width:auto;margin-right:5px}
+.qris{display:none;text-align:center;margin-top:12px}.qris img{max-width:230px;width:100%;border-radius:12px;border:1px solid var(--line)}
+.section{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{display:block;margin-top:5px;font-size:18px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.filters>*{max-width:220px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#f6faf7}.empty{text-align:center;padding:22px;color:var(--muted)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:30;align-items:center;justify-content:center;padding:20px}.modalbox{width:min(560px,100%);background:#fff;border-radius:16px;padding:18px}.receipt{font:12px/1.45 monospace}.receipt hr{border:0;border-top:1px dashed #999}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.brand img{width:165px;height:64px}.search{grid-template-columns:1fr}.products{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.pay{grid-template-columns:1fr 1fr}}
+@media print{header,.no-print{display:none!important}.modal{position:static;background:#fff;padding:0}.modalbox{box-shadow:none;border:0}.receipt{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap head">
+<div class="brand">
+<img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="intuisi.teh Indonesia">
+<div><h1>Kasir Intuisi Shop</h1><div class="sub">Menu • Penjualan • Pembayaran</div></div>
+</div>
+<div class="actions"><button class="btn2" onclick="scrollHistory()">Riwayat</button><button class="btn2" onclick="showReport()">Laporan</button><button class="btn2" onclick="backup()">Backup</button></div>
+</div>
+</header>
+
+<main class="wrap layout no-print">
+<section class="card"><h2>Daftar Menu</h2><div class="pad">
+<div class="search"><input id="search" placeholder="Cari menu..." oninput="renderProducts()"><select id="seriesSelect" onchange="setSeries(this.value)"></select></div>
+<div id="tabs" class="tabs"></div><div id="products" class="products"></div>
+</div></section>
+
+<section class="card"><h2>Pesanan</h2><div class="pad">
+<label>Nama Pembeli</label><input id="buyer" placeholder="Nama pembeli (opsional)">
+<label style="display:block;font-size:12px;font-weight:800;margin:12px 0 6px">Metode Pembayaran</label>
+<div id="payments" class="pay"></div>
+<div id="cashBox"><label style="display:block;font-size:12px;font-weight:800;margin:12px 0 6px">Uang Diterima</label><input id="cash" type="number" min="0" placeholder="0" oninput="renderCart()"></div>
+<div id="qrisBox" class="qris"><div class="meta">Scan QRIS untuk pembayaran.</div><img src="https://cdn.phototourl.com/member/2026-09-29-0c428922-e3b2-440f-b86f-0b7839b3ef9e.jpg" alt="QRIS"></div>
+<div id="cart" class="cart"></div>
+<div class="totalbox"><div class="tot"><span>Subtotal</span><b id="subtotal">Rp 0</b></div><div id="changeRow" class="tot"><span>Kembalian</span><b id="change">Rp 0</b></div><div class="tot grand"><span>Total</span><b id="total">Rp 0</b></div></div>
+<button class="btn" style="width:100%;margin-top:10px" onclick="saveSale()">Simpan Transaksi</button>
+<button class="btn2" style="width:100%;margin-top:8px;background:#edf3ef;color:#18342a;border-color:transparent" onclick="clearCart()">Kosongkan</button>
+<div class="meta" style="margin-top:10px">WhatsApp: 0857 2667 7641 • Instagram: intuisi.teh indonesia</div>
+</div></section>
+</main>
+
+<section id="historySection" class="wrap section no-print"><div class="card"><h2>Riwayat Transaksi</h2><div class="pad">
+<div id="stats" class="stats"></div>
+<div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyPayment" onchange="renderHistory()"><option value="">Semua Pembayaran</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"></div>
+<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Pembeli</th><th>Pembayaran</th><th>Item</th><th>Total</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
+</div></div></section>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><div id="modalContent"></div><div class="no-print" style="display:flex;gap:8px;margin-top:14px"><button class="btn" onclick="window.print()">Cetak</button><button class="btn2" style="background:#edf3ef;color:#17342a" onclick="closeModal()">Tutup</button></div></div></div>
+
+<script>
+const KEY='kasir_intuisi_shop_v1';
+const PRODUCTS=[
+['Intuisi Tea','STD',4000,'Tea Series'],
+['Green Tea','STD',5000,'Tea Series'],
+['Pandan Tea','STD',6000,'Tea Series'],
+['Vanilla Tea','STD',6000,'Tea Series'],
+['Lychee Tea','STD',6000,'Tea Series'],
+['Lemon Tea','STD',6000,'Tea Series'],
+['Peach Tea','STD',6000,'Tea Series'],
+['Apple Tea','STD',6000,'Tea Series'],
+['Mango Tea','STD',6000,'Tea Series'],
+['Strawberry Tea','STD',6000,'Tea Series'],
+['Passion Tea','STD',6000,'Tea Series'],
+['Grape Tea','STD',6000,'Tea Series'],
+['Melon Tea','STD',6000,'Tea Series'],
+['Milk Tea','STD',10000,'Tea Series'],
+['Thai Tea','STD',15000,'Tea Series'],
+['Thai Green Tea','STD',15000,'Tea Series'],
+['Milo Tea','STD',15000,'Tea Series'],
+
+['Matcha','S',15000,'Milk Base'],['Matcha','M',18000,'Milk Base'],
+['Black Oreo','S',15000,'Milk Base'],['Black Oreo','M',18000,'Milk Base'],['Black Oreo','L',20000,'Milk Base'],
+['Choco Ovaltine','S',15000,'Milk Base'],['Choco Ovaltine','M',18000,'Milk Base'],['Choco Ovaltine','L',20000,'Milk Base'],
+['Red Velvet','S',15000,'Milk Base'],['Red Velvet','M',18000,'Milk Base'],['Red Velvet','L',20000,'Milk Base'],
+['Taro','S',15000,'Milk Base'],['Taro','M',18000,'Milk Base'],['Taro','L',20000,'Milk Base'],
+['Dark Choco','S',15000,'Milk Base'],['Dark Choco','M',18000,'Milk Base'],['Dark Choco','L',20000,'Milk Base'],
+['Choco Milo','S',15000,'Milk Base'],['Choco Milo','M',18000,'Milk Base'],['Choco Milo','L',20000,'Milk Base'],
+['Choco Creamy','S',15000,'Milk Base'],['Choco Creamy','M',18000,'Milk Base'],['Choco Creamy','L',20000,'Milk Base'],
+['Choco Hazelnut','S',15000,'Milk Base'],['Choco Hazelnut','M',18000,'Milk Base'],['Choco Hazelnut','L',20000,'Milk Base'],
+['Tiramisu','S',15000,'Milk Base'],['Tiramisu','M',18000,'Milk Base'],['Tiramisu','L',20000,'Milk Base'],
+['Avocado','S',15000,'Milk Base'],['Avocado','M',18000,'Milk Base'],['Avocado','L',20000,'Milk Base'],
+['Banana Uyu','S',15000,'Milk Base'],['Banana Uyu','M',18000,'Milk Base'],['Banana Uyu','L',20000,'Milk Base'],
+['Bubblegum','S',15000,'Milk Base'],['Bubblegum','M',18000,'Milk Base'],['Bubblegum','L',20000,'Milk Base'],
+
+['Americano','S',10000,'Coffee Latte'],['Americano','M',13000,'Coffee Latte'],
+['Intuisi Latte','S',13000,'Coffee Latte'],['Intuisi Latte','M',15000,'Coffee Latte'],
+['Spanish Latte','S',15000,'Coffee Latte'],['Spanish Latte','M',18000,'Coffee Latte'],
+['Brown Sugar Latte','S',15000,'Coffee Latte'],['Brown Sugar Latte','M',18000,'Coffee Latte'],
+['Salted Caramel','S',15000,'Coffee Latte'],['Salted Caramel','M',18000,'Coffee Latte'],
+['Butterscotch','S',15000,'Coffee Latte'],['Butterscotch','M',18000,'Coffee Latte'],
+['Pandan Aren Latte','S',15000,'Coffee Latte'],['Pandan Aren Latte','M',18000,'Coffee Latte'],
+['Vanilla Latte','S',15000,'Coffee Latte'],['Vanilla Latte','M',18000,'Coffee Latte'],
+['Tiramisu Latte','S',15000,'Coffee Latte'],['Tiramisu Latte','M',18000,'Coffee Latte'],
+['Hazelnut Latte','S',16000,'Coffee Latte'],['Hazelnut Latte','M',18000,'Coffee Latte'],
+['Cappuccino','S',16000,'Coffee Latte'],['Cappuccino','M',18000,'Coffee Latte'],
+['Banana Delight','S',16000,'Coffee Latte'],['Banana Delight','M',18000,'Coffee Latte'],
+['Avolatte','S',18000,'Coffee Latte'],['Avolatte','M',20000,'Coffee Latte'],
+['Almond Latte','S',15000,'New Product'],['Almond Latte','M',18000,'New Product'],
+['Pistachio Latte','S',15000,'New Product'],['Pistachio Latte','M',18000,'New Product'],
+['Caramel Macchiato','S',18000,'New Product'],['Caramel Macchiato','M',20000,'New Product'],
+
+['Lychee','Yakult',15000,'Signature Intuisi Teh'],['Lychee','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Mango','Yakult',15000,'Signature Intuisi Teh'],['Mango','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Melon','Yakult',15000,'Signature Intuisi Teh'],['Melon','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Grape','Yakult',15000,'Signature Intuisi Teh'],['Grape','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Strawberry','Yakult',15000,'Signature Intuisi Teh'],['Strawberry','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Peach','Yakult',15000,'Signature Intuisi Teh'],['Peach','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Lemon','Yakult',15000,'Signature Intuisi Teh'],['Lemon','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+
+['Lychee Squash','M',12000,'Mocktail'],['Lemon Squash','M',12000,'Mocktail'],['Peach Squash','M',12000,'Mocktail'],
+['Apple Squash','M',12000,'Mocktail'],['Mango Squash','M',12000,'Mocktail'],['Strawberry Squash','M',12000,'Mocktail'],
+['Passion Squash','M',12000,'Mocktail'],['Grape Squash','M',12000,'Mocktail'],['Melon Squash','M',12000,'Mocktail'],
+['Lemonade Mojito','M',12000,'Mocktail'],['Blue Ocean','M',12000,'Mocktail']
+].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3]}));
+
+const BEST={
+'Tea Series':new Set(['Intuisi Tea','Lychee Tea','Lemon Tea','Peach Tea','Thai Tea','Milo Tea']),
+'Milk Base':new Set(['Matcha','Black Oreo','Red Velvet','Taro','Choco Creamy']),
+'Coffee Latte':new Set(['Spanish Latte','Pandan Aren Latte','Cappuccino']),
+'Mocktail':new Set(['Lychee Squash','Lemon Squash','Blue Ocean']),
+'New Product':new Set(['Caramel Macchiato'])
+};
+const PAYMENTS=['Cash','QRIS','GoFood','GrabFood','Shopee Food'];
+let cart=[],payment='Cash',activeSeries='Semua';
+const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','');
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}};
+const save=s=>localStorage.setItem(KEY,JSON.stringify(s));
+function today(){return new Date().toISOString().slice(0,10)}
+function init(){
+ const series=[...new Set(PRODUCTS.map(p=>p.series))];
+ document.getElementById('seriesSelect').innerHTML='<option>Semua</option>'+series.map(s=>'<option>'+esc(s)+'</option>').join('');
+ document.getElementById('historyPayment').innerHTML='<option value="">Semua Pembayaran</option>'+PAYMENTS.map(p=>'<option>'+esc(p)+'</option>').join('');
+ document.getElementById('payments').innerHTML=PAYMENTS.map(p=>'<div class="paybox '+(p==='Cash'?'active':'')+'" data-pay="'+esc(p)+'" onclick="setPayment(\''+p+'\',this)"><input type="radio" name="payment" '+(p==='Cash'?'checked':'')+'> '+esc(p)+'</div>').join('');
+ document.getElementById('historyDate').value=today();renderTabs();renderProducts();renderCart();renderHistory();renderStats();
+}
+function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
+function renderTabs(){const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" onclick="setSeries('+JSON.stringify(s)+')">'+esc(s)+'</button>').join('')}
+function renderProducts(){
+ const q=(document.getElementById('search').value||'').toLowerCase().trim();
+ const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q))).sort((a,b)=>a.price-b.price||a.name.localeCompare(b.name)||a.size.localeCompare(b.size));
+ document.getElementById('products').innerHTML=arr.length?arr.map(p=>{
+   const best=BEST[p.series]?.has(p.name);
+   return '<div class="product"><div><div class="name">'+(best?'<span class="badge">★ BEST SELLER</span>':'')+esc(p.name)+'</div><div class="meta">'+esc(p.series)+' • Size '+esc(p.size)+'</div><div class="price">'+rupiah(p.price)+'</div></div><button class="btn" onclick="add('+p.id+')">Tambah</button></div>'
+ }).join(''):'<div class="empty">Menu tidak ditemukan.</div>';
+}
+function add(id){const p=PRODUCTS.find(x=>x.id===id),f=cart.find(x=>x.id===id);if(f)f.qty++;else cart.push({...p,qty:1});renderCart()}
+function changeQty(id,d){const f=cart.find(x=>x.id===id);if(!f)return;f.qty+=d;if(f.qty<=0)cart=cart.filter(x=>x.id!==id);renderCart()}
+function clearCart(){cart=[];document.getElementById('cash').value='';renderCart()}
+function total(){return cart.reduce((n,x)=>n+x.price*x.qty,0)}
+function renderCart(){
+ document.getElementById('cart').innerHTML=cart.length?cart.map(x=>'<div class="item"><div class="row"><div><div class="name">'+esc(x.name)+'</div><div class="meta">'+esc(x.size)+' • '+rupiah(x.price)+'</div></div><b>'+rupiah(x.price*x.qty)+'</b></div><div class="row"><div class="qty"><button onclick="changeQty('+x.id+',-1)">−</button><b>'+x.qty+'</b><button onclick="changeQty('+x.id+',1)">+</button></div><button class="danger" onclick="changeQty('+x.id+',-'+x.qty+')">Hapus</button></div></div>').join(''):'<div class="empty">Keranjang masih kosong.</div>';
+ const t=total(),cash=Number(document.getElementById('cash').value||0);document.getElementById('subtotal').textContent=rupiah(t);document.getElementById('total').textContent=rupiah(t);document.getElementById('change').textContent=rupiah(Math.max(0,cash-t));document.getElementById('changeRow').style.display=payment==='Cash'?'flex':'none';
+}
+function setPayment(v,el){payment=v;document.querySelectorAll('.paybox').forEach(x=>x.classList.remove('active'));el.classList.add('active');el.querySelector('input').checked=true;document.getElementById('cashBox').style.display=v==='Cash'?'block':'none';document.getElementById('qrisBox').style.display=v==='QRIS'?'block':'none';renderCart()}
+function saveSale(){
+ if(!cart.length)return alert('Keranjang masih kosong.');
+ const t=total(),cash=Number(document.getElementById('cash').value||0);if(payment==='Cash'&&cash<t)return alert('Uang diterima masih kurang.');
+ const sale={id:Date.now(),time:new Date().toISOString(),buyer:(document.getElementById('buyer').value||'Umum').trim(),payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
+ const sales=load();sales.push(sale);save(sales);showReceipt(sale);clearCart();document.getElementById('buyer').value='';renderHistory();renderStats();
+}
+function showReceipt(s){
+ const dt=new Date(s.time);const items=s.items.map(i=>esc(i.name)+' ['+esc(i.size)+'] x'+i.qty+' '+rupiah(i.price*i.qty)).join('<br>');
+ document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR INTUISI SHOP</b><br>intuisi.teh INDONESIA</div><hr>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+items+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div>';
+ document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function showReceiptById(id){const s=load().find(x=>x.id===id);if(s)showReceipt(s)}
+function renderHistory(){
+ const d=document.getElementById('historyDate').value,p=document.getElementById('historyPayment').value,q=(document.getElementById('historySearch').value||'').toLowerCase();
+ const sales=load().filter(s=>(!d||s.time.slice(0,10)===d)&&(!p||s.payment===p)&&(!q||s.buyer.toLowerCase().includes(q))).sort((a,b)=>b.id-a.id);
+ document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn2" style="background:#edf3ef;color:#17342a;border:0" onclick="showReceiptById('+s.id+')">Struk</button></td></tr>').join(''):'<tr><td colspan="6" class="empty">Belum ada transaksi.</td></tr>';
+}
+function renderStats(){
+ const d=today(),tod=load().filter(s=>s.time.slice(0,10)===d),om=tod.reduce((n,s)=>n+s.total,0),qty=tod.reduce((n,s)=>n+s.items.reduce((m,i)=>m+i.qty,0),0);
+ document.getElementById('stats').innerHTML='<div class="stat"><span>Transaksi hari ini</span><b>'+tod.length+'</b></div><div class="stat"><span>Omzet hari ini</span><b>'+rupiah(om)+'</b></div><div class="stat"><span>Item terjual</span><b>'+qty+'</b></div><div class="stat"><span>Rata-rata</span><b>'+rupiah(tod.length?Math.round(om/tod.length):0)+'</b></div>';
+}
+function showReport(){
+ const sales=load(),map={};sales.forEach(s=>s.items.forEach(i=>{const p=PRODUCTS.find(x=>x.name===i.name&&x.size===i.size);const k=p?p.series:'Lainnya';map[k]=(map[k]||0)+i.qty}));
+ const rows=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v+'</td></tr>').join('');
+ document.getElementById('modalContent').innerHTML='<h3 style="margin-top:0">Laporan Item Terjual</h3><div class="tablewrap"><table><thead><tr><th>Series</th><th>Item</th></tr></thead><tbody>'+ (rows||'<tr><td colspan="2" class="empty">Belum ada data.</td></tr>') +'</tbody></table></div>';
+ document.getElementById('modal').style.display='flex';
+}
+function backup(){const a=document.createElement('a'),b=new Blob([JSON.stringify(load(),null,2)],{type:'application/json'});a.href=URL.createObjectURL(b);a.download='backup-kasir-intuisi-shop-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function scrollHistory(){document.getElementById('historySection').scrollIntoView({behavior:'smooth'})}
+init();
+</script>
+</body>
+</html>
