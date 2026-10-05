@@ -132,6 +132,15 @@ a{text-decoration:none;color:inherit}
 .menu-section.is-hidden{display:none!important}
 .product-card.is-hidden{display:none!important}
 .menu-section.single-view .see-all{display:none}
+.menu-section.is-expanded .track{
+  flex-wrap:wrap;
+  overflow:visible;
+}
+.menu-section.is-expanded .arrow{display:none}
+.menu-section.no-results{display:none}
+.size-filter-wrap{
+  flex-basis:100%;
+}
 @media(max-width:720px){
   .size-filter-wrap{align-items:flex-start;flex-direction:column}
 }
@@ -1435,83 +1444,122 @@ a{text-decoration:none;color:inherit}
   var tabs=document.getElementById('tabs');
   var sizeWrap=document.getElementById('sizeFilter');
   var sizeTabs=document.getElementById('sizeTabs');
+  var sections=Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
 
-  function escAttr(v){
-    return String(v).replace(/"/g,'&quot;');
-  }
-  function sectionList(){
-    return Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
-  }
   function cardSize(card){
     var meta=card.querySelector('.product-meta');
-    if(!meta)return '';
-    var t=meta.textContent||'';
+    var t=meta ? (meta.textContent||'') : '';
     var m=t.match(/(?:Ukuran|Varian):\s*(.+)/i);
-    return m?m[1].trim():'';
+    return m ? m[1].trim() : '';
   }
+
   function renderSeriesTabs(){
     tabs.innerHTML='';
-    ['Semua'].concat(ORDER).forEach(function(s){
+    ['Semua'].concat(ORDER).forEach(function(series){
       var b=document.createElement('button');
       b.type='button';
-      b.className='tab'+(activeSeries===s?' active':'');
-      b.textContent=s;
-      b.dataset.series=s;
-      b.onclick=function(){activeSeries=s;activeSize='Semua';renderSizeTabs();applyFilters();renderSeriesTabs();};
+      b.className='tab'+(activeSeries===series?' active':'');
+      b.textContent=series;
+      b.onclick=function(){
+        activeSeries=series;
+        activeSize='Semua';
+        renderSeriesTabs();
+        renderSizeTabs();
+        applyFilters();
+        if(series!=='Semua'){
+          var target=document.querySelector('.menu-section[data-series="'+series+'"]');
+          if(target){
+            target.classList.add('is-expanded');
+            setTimeout(function(){target.scrollIntoView({behavior:'smooth',block:'start'});},30);
+          }
+        }
+      };
       tabs.appendChild(b);
     });
   }
+
   function availableSizes(){
     var list=[];
-    sectionList().forEach(function(sec){
+    sections.forEach(function(sec){
       if(activeSeries!=='Semua' && sec.dataset.series!==activeSeries)return;
-      Array.prototype.slice.call(sec.querySelectorAll('.product-card')).forEach(function(card){
-        var sz=cardSize(card);
-        if(sz && list.indexOf(sz)<0)list.push(sz);
+      sec.querySelectorAll('.product-card').forEach(function(card){
+        var size=cardSize(card);
+        if(size && list.indexOf(size)<0) list.push(size);
       });
     });
-    var preferred=['S','M','L','STD','Yakult','Yoghurt Breeze'];
-    return preferred.filter(function(s){return list.indexOf(s)>=0;});
+    var pref=['S','M','L','STD','Yakult','Yoghurt Breeze'];
+    return pref.filter(function(x){return list.indexOf(x)>=0;});
   }
+
   function renderSizeTabs(){
+    sizeTabs.innerHTML='';
     var sizes=availableSizes();
-    if(activeSeries==='Semua' || sizes.length<=0){
+    if(activeSeries==='Semua' || sizes.length===0){
       sizeWrap.classList.add('hidden');
-      sizeTabs.innerHTML='';
       return;
     }
     sizeWrap.classList.remove('hidden');
-    sizeTabs.innerHTML='';
-    ['Semua'].concat(sizes).forEach(function(s){
+    ['Semua'].concat(sizes).forEach(function(size){
       var b=document.createElement('button');
       b.type='button';
-      b.className='size-tab'+(activeSize===s?' active':'');
-      b.textContent=s==='Semua'?'Semua Ukuran':s;
-      b.dataset.size=s;
-      b.onclick=function(){activeSize=s;applyFilters();renderSizeTabs();};
+      b.className='size-tab'+(activeSize===size?' active':'');
+      b.textContent=size==='Semua'?'Semua Ukuran':size;
+      b.onclick=function(){
+        activeSize=size;
+        renderSizeTabs();
+        applyFilters();
+      };
       sizeTabs.appendChild(b);
     });
   }
+
   function applyFilters(){
     var q=(search.value||'').toLowerCase().trim();
-    sectionList().forEach(function(sec){
-      var showSeries=activeSeries==='Semua'||sec.dataset.series===activeSeries;
-      sec.classList.toggle('is-hidden',!showSeries);
-      sec.classList.toggle('single-view',activeSeries!=='Semua');
+    sections.forEach(function(sec){
+      var series=sec.dataset.series;
+      var seriesOK=activeSeries==='Semua'||series===activeSeries;
       var visible=0;
-      Array.prototype.slice.call(sec.querySelectorAll('.product-card')).forEach(function(card){
+      sec.querySelectorAll('.product-card').forEach(function(card){
         var data=(card.getAttribute('data-search')||'').toLowerCase();
-        var sz=cardSize(card);
-        var show=!q||data.indexOf(q)>=0;
-        if(activeSize!=='Semua')show=show && sz===activeSize;
+        var size=cardSize(card);
+        var textOK=!q || data.indexOf(q)>=0;
+        var sizeOK=activeSize==='Semua'||size===activeSize;
+        var show=seriesOK && textOK && sizeOK;
         card.classList.toggle('is-hidden',!show);
         if(show)visible++;
       });
+
       sec.querySelector('.count').textContent=visible+' item';
-      sec.classList.toggle('is-hidden',!showSeries||visible===0);
+      sec.classList.toggle('no-results',!seriesOK||visible===0);
+
+      if(activeSeries!=='Semua' && series===activeSeries){
+        sec.classList.add('single-view','is-expanded');
+      }else{
+        sec.classList.remove('single-view');
+        if(activeSeries==='Semua') sec.classList.remove('is-expanded');
+      }
     });
   }
-  if(search)search.addEventListener('input',applyFilters);
+
+  sections.forEach(function(sec){
+    var track=sec.querySelector('.track');
+    var left=sec.querySelector('.arrow.left');
+    var right=sec.querySelector('.arrow.right');
+    var all=sec.querySelector('.see-all');
+
+    if(left) left.onclick=function(){
+      track.scrollBy({left:-Math.max(280,track.clientWidth*.72),behavior:'smooth'});
+    };
+    if(right) right.onclick=function(){
+      track.scrollBy({left:Math.max(280,track.clientWidth*.72),behavior:'smooth'});
+    };
+    if(all) all.onclick=function(){
+      var expanded=sec.classList.toggle('is-expanded');
+      all.textContent=expanded?'Tutup':'Lihat Semua ›';
+    };
+  });
+
+  if(search) search.addEventListener('input',applyFilters);
   renderSeriesTabs();
   renderSizeTabs();
   applyFilters();
