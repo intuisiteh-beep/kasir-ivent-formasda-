@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b6542">
+<title>Daftar Menu • Intuisi Teh Indonesia</title>
+<meta name="description" content="Daftar Menu Intuisi Teh Indonesia">
+<style>
+:root{
+  --green:#0b6542;--green-dark:#073e2a;--green-soft:#eef7f1;
+  --cream:#fbfaf4;--gold:#d3ab3d;--ink:#18342a;--muted:#687a71;--line:#dbe6df;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(180deg,#f4f8f4 0%,#edf4ee 100%);
+  color:var(--ink);
+}
+a{text-decoration:none;color:inherit}
+.container{max-width:1200px;margin:auto;padding:18px}
+.hero{
+  background:linear-gradient(135deg,var(--green-dark),var(--green));
+  border-radius:24px;
+  padding:24px;
+  color:#fff;
+  box-shadow:0 14px 34px rgba(18,67,45,.15);
+  display:grid;
+  grid-template-columns:170px 1fr;
+  gap:22px;
+  align-items:center;
+}
+.logo-wrap{
+  background:#fff;
+  border-radius:18px;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.logo-wrap img{
+  width:100%;
+  max-height:130px;
+  object-fit:contain;
+  border-radius:10px;
+}
+.kicker{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  color:#f5da73;
+}
+h1{margin:4px 0 8px;font-size:36px;line-height:1.05}
+.tagline{margin:0;color:#e8f4ec;font-size:14px;font-weight:700}
+.contact{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:16px
+}
+.contact a{
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  padding:9px 12px;border-radius:999px;font-size:13px;font-weight:800;
+}
+.toolbar{
+  margin:18px 0 14px;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center
+}
+.search{
+  flex:1 1 320px;
+  padding:13px 14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  font-size:14px;
+  outline:none;
+  box-shadow:0 6px 18px rgba(18,67,45,.05)
+}
+.tabs{
+  display:flex;gap:8px;flex-wrap:wrap
+}
+.tab{
+  border:0;border-radius:999px;padding:9px 13px;
+  background:#fff;color:var(--green-dark);
+  font-weight:900;cursor:pointer;
+  border:1px solid var(--line);
+}
+.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.section{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 24px rgba(18,67,45,.05);
+  break-inside:avoid;
+}
+.section-head{
+  padding:13px 16px;
+  background:linear-gradient(90deg,var(--green-dark),var(--green));
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  font-size:17px;
+  font-weight:900;
+}
+.section-head .count{color:#f6db70;font-size:12px}
+.items{padding:8px 14px 10px}
+.item{
+  padding:11px 2px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  border-bottom:1px dashed var(--line);
+}
+.item:last-child{border-bottom:0}
+.left{min-width:0}
+.name{font-size:14px;font-weight:900;line-height:1.2}
+.meta{font-size:11px;color:var(--muted);margin-top:4px}
+.prices{display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap}
+.price{font-size:13px;font-weight:900;color:var(--green)}
+.size-label{
+  display:inline-block;
+  font-size:10px;font-weight:900;
+  padding:3px 6px;border-radius:999px;
+  background:var(--green-soft);color:var(--green-dark);
+}
+.best{
+  display:inline-block;
+  margin-left:6px;
+  font-size:9px;
+  padding:3px 6px;
+  border-radius:999px;
+  background:#fff2bb;
+  color:#8a6b00;
+  vertical-align:2px;
+}
+.footer{
+  margin-top:18px;
+  background:var(--green-dark);
+  color:#fff;
+  border-radius:20px;
+  padding:18px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.footer-box{
+  padding:13px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  text-align:center;
+}
+.footer-title{
+  color:#f6db70;font-weight:900;font-size:12px;letter-spacing:.4px
+}
+.footer-text{
+  margin-top:5px;font-size:13px;line-height:1.45;color:#e4f1e9;font-weight:700
+}
+.note{text-align:center;color:var(--muted);font-size:12px;margin:13px 0 3px}
+.empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:40px 20px;
+  background:#fff;border:1px solid var(--line);border-radius:16px;color:var(--muted)
+}
+@media(max-width:800px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .logo-wrap{max-width:250px;margin:auto}
+  .contact{justify-content:center}
+  .grid{grid-template-columns:1fr}
+  .footer{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .container{padding:12px}
+  h1{font-size:28px}
+  .section-head{font-size:15px}
+  .name{font-size:13px}
+}
+@media print{
+  body{background:#fff}
+  .no-print{display:none!important}
+  .container{max-width:none;padding:8mm}
+  .hero{box-shadow:none}
+  .grid{grid-template-columns:1fr 1fr}
+  .section{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="hero">
+    <div class="logo-wrap">
+      <img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="Intuisi Teh Indonesia">
+    </div>
+    <div>
+      <div class="kicker">Intuisi Teh Indonesia</div>
+      <h1>Daftar Menu</h1>
+      <p class="tagline">Dari Lidah Turun Ke Hati</p>
+      <div class="contact">
+        <a href="https://wa.me/6285726677641" target="_blank" rel="noopener">WhatsApp 0857 2667 7641</a>
+        <a href="https://www.instagram.com/intuisitehindonesia/" target="_blank" rel="noopener">Instagram • intuisi.teh indonesia</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar no-print">
+    <input id="search" class="search" placeholder="Cari menu..." oninput="render()" aria-label="Cari menu">
+    <div id="tabs" class="tabs"></div>
+  </div>
+
+  <main id="menu" class="grid"></main>
+
+  <footer class="footer">
+    <div class="footer-box">
+      <div class="footer-title">PEMESANAN</div>
+      <div class="footer-text">WhatsApp<br>0857 2667 7641</div>
+    </div>
+    <div class="footer-box">
+      <div class="footer-title">INSTAGRAM</div>
+      <div class="footer-text">intuisiteh indonesia</div>
+    </div>
+    <div class="footer-box">
+      <div class="footer-title">LAYANAN</div>
+      <div class="footer-text">Cash • QRIS<br>Menu Stand Intuisi Teh</div>
+    </div>
+  </footer>
+
+  <div class="note">Daftar Menu Intuisi Teh Indonesia</div>
+</div>
+
+<script>
+const PRODUCTS=[
+['Intuisi Tea','STD',4000,'Tea Series'],
+['Green Tea','STD',6000,'Tea Series'],
+['Pandan Tea','STD',6000,'Tea Series'],
+['Vanilla Tea','STD',6000,'Tea Series'],
+['Lychee Tea','STD',6000,'Tea Series'],
+['Lemon Tea','STD',6000,'Tea Series'],
+['Peach Tea','STD',6000,'Tea Series'],
+['Apple Tea','STD',6000,'Tea Series'],
+['Mango Tea','STD',6000,'Tea Series'],
+['Strawberry Tea','STD',6000,'Tea Series'],
+['Passion Tea','STD',6000,'Tea Series'],
+['Grape Tea','STD',6000,'Tea Series'],
+['Melon Tea','STD',6000,'Tea Series'],
+['Milk Tea','STD',10000,'Tea Series'],
+['Thai Tea','STD',15000,'Tea Series'],
+['Thai Green Tea','STD',15000,'Tea Series'],
+['Milo Tea','STD',15000,'Tea Series'],
+
+['Matcha','S',15000,'Milk Base'],['Matcha','M',18000,'Milk Base'],
+['Black Oreo','S',15000,'Milk Base'],['Black Oreo','M',18000,'Milk Base'],['Black Oreo','L',20000,'Milk Base'],
+['Choco Ovaltine','S',15000,'Milk Base'],['Choco Ovaltine','M',18000,'Milk Base'],['Choco Ovaltine','L',20000,'Milk Base'],
+['Red Velvet','S',15000,'Milk Base'],['Red Velvet','M',18000,'Milk Base'],['Red Velvet','L',20000,'Milk Base'],
+['Taro','S',15000,'Milk Base'],['Taro','M',18000,'Milk Base'],['Taro','L',20000,'Milk Base'],
+['Dark Choco','S',15000,'Milk Base'],['Dark Choco','M',18000,'Milk Base'],['Dark Choco','L',20000,'Milk Base'],
+['Choco Milo','S',15000,'Milk Base'],['Choco Milo','M',18000,'Milk Base'],['Choco Milo','L',20000,'Milk Base'],
+['Choco Creamy','S',15000,'Milk Base'],['Choco Creamy','M',18000,'Milk Base'],['Choco Creamy','L',20000,'Milk Base'],
+['Choco Hazelnut','S',15000,'Milk Base'],['Choco Hazelnut','M',18000,'Milk Base'],['Choco Hazelnut','L',20000,'Milk Base'],
+['Tiramisu','S',15000,'Milk Base'],['Tiramisu','M',18000,'Milk Base'],['Tiramisu','L',20000,'Milk Base'],
+['Avocado','S',15000,'Milk Base'],['Avocado','M',18000,'Milk Base'],['Avocado','L',20000,'Milk Base'],
+['Banana Uyu','S',15000,'Milk Base'],['Banana Uyu','M',18000,'Milk Base'],['Banana Uyu','L',20000,'Milk Base'],
+['Bubblegum','S',15000,'Milk Base'],['Bubblegum','M',18000,'Milk Base'],['Bubblegum','L',20000,'Milk Base'],
+
+['Americano','S',10000,'Coffee Latte'],['Americano','M',13000,'Coffee Latte'],
+['Intuisi Latte','S',13000,'Coffee Latte'],['Intuisi Latte','M',15000,'Coffee Latte'],
+['Spanish Latte','S',15000,'Coffee Latte'],['Spanish Latte','M',18000,'Coffee Latte'],
+['Brown Sugar Latte','S',15000,'Coffee Latte'],['Brown Sugar Latte','M',18000,'Coffee Latte'],
+['Salted Caramel','S',15000,'Coffee Latte'],['Salted Caramel','M',18000,'Coffee Latte'],
+['Butterscotch','S',15000,'Coffee Latte'],['Butterscotch','M',18000,'Coffee Latte'],
+['Pandan Aren Latte','S',15000,'Coffee Latte'],['Pandan Aren Latte','M',18000,'Coffee Latte'],
+['Vanilla Latte','S',15000,'Coffee Latte'],['Vanilla Latte','M',18000,'Coffee Latte'],
+['Tiramisu Latte','S',15000,'Coffee Latte'],['Tiramisu Latte','M',18000,'Coffee Latte'],
+['Hazelnut Latte','S',16000,'Coffee Latte'],['Hazelnut Latte','M',18000,'Coffee Latte'],
+['Cappuccino','S',16000,'Coffee Latte'],['Cappuccino','M',18000,'Coffee Latte'],
+['Banana Delight','S',16000,'Coffee Latte'],['Banana Delight','M',18000,'Coffee Latte'],
+['Avolatte','S',18000,'Coffee Latte'],['Avolatte','M',20000,'Coffee Latte'],
+
+['Almond Latte','S',15000,'New Product'],['Almond Latte','M',18000,'New Product'],
+['Pistachio Latte','S',15000,'New Product'],['Pistachio Latte','M',18000,'New Product'],
+['Caramel Macchiato','S',18000,'New Product'],['Caramel Macchiato','M',20000,'New Product'],
+
+['Lychee','Yakult',15000,'Signature Intuisi Teh'],['Lychee','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Mango','Yakult',15000,'Signature Intuisi Teh'],['Mango','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Melon','Yakult',15000,'Signature Intuisi Teh'],['Melon','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Grape','Yakult',15000,'Signature Intuisi Teh'],['Grape','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Strawberry','Yakult',15000,'Signature Intuisi Teh'],['Strawberry','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Peach','Yakult',15000,'Signature Intuisi Teh'],['Peach','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+['Lemon','Yakult',15000,'Signature Intuisi Teh'],['Lemon','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
+
+['Lychee Squash','M',12000,'Mocktail'],['Lemon Squash','M',12000,'Mocktail'],['Peach Squash','M',12000,'Mocktail'],
+['Apple Squash','M',12000,'Mocktail'],['Mango Squash','M',12000,'Mocktail'],['Strawberry Squash','M',12000,'Mocktail'],
+['Passion Squash','M',12000,'Mocktail'],['Grape Squash','M',12000,'Mocktail'],['Melon Squash','M',12000,'Mocktail'],
+['Lemonade Mojito','M',12000,'Mocktail'],['Blue Ocean','M',12000,'Mocktail']
+].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3]}));
+
+const BEST={
+  'Tea Series':new Set(['Intuisi Tea','Lychee Tea','Lemon Tea','Peach Tea','Thai Tea','Milo Tea']),
+  'Milk Base':new Set(['Matcha','Black Oreo','Red Velvet','Taro','Choco Creamy']),
+  'Coffee Latte':new Set(['Intuisi Latte','Brown Sugar Latte','Cappuccino']),
+  'Mocktail':new Set(['Lemon Squash','Lychee Squash','Blue Ocean'])
+};
+let active='Semua';
+
+function rupiah(n){
+  return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0})
+    .format(n).replace('IDR','Rp').replace(',00','');
+}
+function esc(v){
+  return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function setActive(v){
+  active=v;
+  document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.series===v));
+  renderMenu();
+}
+function renderTabs(){
+  const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];
+  document.getElementById('tabs').innerHTML=all.map(s=>
+    '<button type="button" class="tab '+(active===s?'active':'')+'" data-series="'+esc(s)+'">'+esc(s)+'</button>'
+  ).join('');
+  document.querySelectorAll('#tabs .tab').forEach(btn=>btn.addEventListener('click',()=>setActive(btn.dataset.series)));
+}
+function renderMenu(){
+  const q=(document.getElementById('search').value||'').toLowerCase().trim();
+  const arr=PRODUCTS.filter(p=>
+    (active==='Semua'||p.series===active) &&
+    (!q || (p.name+' '+p.size+' '+p.series).toLowerCase().includes(q))
+  );
+  const grouped={};
+  arr.forEach(p=>(grouped[p.series]??=[]).push(p));
+  const order=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
+  document.getElementById('menu').innerHTML=order.filter(s=>grouped[s]?.length).map(s=>{
+    const isSig=s==='Signature Intuisi Teh';
+    return '<section class="section">'+
+      '<div class="section-head"><span>'+esc(s)+'</span><span class="count">'+grouped[s].length+' item</span></div>'+
+      '<div class="items">'+grouped[s].map(p=>{
+        const best=BEST[s]?.has(p.name);
+        return '<div class="item">'+
+          '<div class="left"><div class="name">'+esc(p.name)+(best?'<span class="best">BEST SELLER</span>':'')+'</div>'+
+          '<div class="meta">'+(isSig?'Varian: '+esc(p.size):'Ukuran: '+esc(p.size))+'</div></div>'+
+          '<div class="prices"><span class="size-label">'+esc(p.size)+'</span><span class="price">'+rupiah(p.price)+'</span></div>'+
+          '</div>';
+      }).join('')+
+      '</div></section>';
+  }).join('') || '<div class="empty">Menu tidak ditemukan.</div>';
+}
+function render(){
+  renderTabs();
+  renderMenu();
+}
+render();
+</script>
+</body>
+</html>
