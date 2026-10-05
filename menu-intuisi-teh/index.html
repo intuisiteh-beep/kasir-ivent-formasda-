@@ -367,106 +367,77 @@ const PRODUCTS=[
 ['Apple Squash','M',12000,'Mocktail'],['Mango Squash','M',12000,'Mocktail'],['Strawberry Squash','M',12000,'Mocktail'],
 ['Passion Squash','M',12000,'Mocktail'],['Grape Squash','M',12000,'Mocktail'],['Melon Squash','M',12000,'Mocktail'],
 ['Lemonade Mojito','M',12000,'Mocktail'],['Blue Ocean','M',12000,'Mocktail']
-].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3]}));
+];
 
 const BEST={
-  'Tea Series':new Set(['Intuisi Tea','Lychee Tea','Lemon Tea','Peach Tea','Thai Tea','Milo Tea']),
-  'Milk Base':new Set(['Matcha','Black Oreo','Red Velvet','Taro','Choco Creamy']),
-  'Coffee Latte':new Set(['Intuisi Latte','Brown Sugar Latte','Cappuccino']),
-  'Mocktail':new Set(['Lemon Squash','Lychee Squash','Blue Ocean'])
+  'Tea Series':['Intuisi Tea','Lychee Tea','Lemon Tea','Peach Tea','Thai Tea','Milo Tea'],
+  'Milk Base':['Matcha','Black Oreo','Red Velvet','Taro','Choco Creamy'],
+  'Coffee Latte':['Intuisi Latte','Brown Sugar Latte','Cappuccino'],
+  'Mocktail':['Lemon Squash','Lychee Squash','Blue Ocean']
 };
-
-const order=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
-const drinkColors={
-  'Tea Series':'#ba6a37','Milk Base':'#a77755','Coffee Latte':'#7b4b31',
-  'New Product':'#b98957','Signature Intuisi Teh':'#cd6e74','Mocktail':'#41a9b6'
-};
+const ORDER=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
 let active='Semua';
 
 function rupiah(n){
   return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0})
-  .format(n).replace('IDR','Rp').replace(',00','');
+    .format(n).replace('IDR','Rp').replace(',00','');
 }
 function esc(v){
-  return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const d=document.createElement('div');d.textContent=v;return d.innerHTML;
 }
-function idSlug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-')}
-
-function groupProducts(arr){
-  const grouped={};
-  arr.forEach(p=>(grouped[p.series]??=[]).push(p));
-  return grouped;
-}
-function cupIcon(series){
-  const icons={
-    'Tea Series':'🍃',
-    'Milk Base':'🥛',
-    'Coffee Latte':'☕',
-    'New Product':'✨',
-    'Signature Intuisi Teh':'🍓',
-    'Mocktail':'🍹'
-  };
-  return icons[series]||'🥤';
+function iconFor(s){
+  return {'Tea Series':'🍃','Milk Base':'🥛','Coffee Latte':'☕','New Product':'✨','Signature Intuisi Teh':'🍓','Mocktail':'🍹'}[s]||'🥤';
 }
 function card(p){
-  const best=BEST[p.series]?.has(p.name);
-  return '<article class="card">'+
-    '<div class="thumb"><div class="cup-text">'+
-      '<span class="cup-icon">'+cupIcon(p.series)+'</span>'+
-      '<span class="cup-brand">intuisi.teh</span>'+
-      '<span class="cup-sub">INDONESIA</span>'+
-    '</div></div>'+
-    '<div class="card-body">'+
-      '<div class="card-name">'+esc(p.name)+(best?'<span class="best">BEST</span>':'')+'</div>'+
-      '<div class="card-meta">'+(p.series==='Signature Intuisi Teh'?'Varian: ':'Ukuran: ')+esc(p.size)+'</div>'+
-      '<div class="card-price">'+rupiah(p.price)+'</div>'+
-    '</div>'+
-  '</article>';
-}
-function sectionTemplate(series,items){
-  const id=idSlug(series);
-  return '<section class="section" id="sec-'+id+'">'+
-    '<div class="section-top">'+
-      '<div class="section-title"><span class="dot"></span><h2>'+esc(series)+'</h2></div>'+
-      '<button class="see-all" onclick="toggleSection(\''+id+'\')">Lihat Semua ›</button>'+
-    '</div>'+
-    '<div class="carousel">'+
-      '<button class="arrow left" onclick="slide(\''+id+'\',-1)" aria-label="Sebelumnya">‹</button>'+
-      '<div class="track" id="track-'+id+'">'+items.map(card).join('')+'</div>'+
-      '<div class="all-items" id="all-'+id+'">'+items.map(card).join('')+'</div>'+
-      '<button class="arrow right" onclick="slide(\''+id+'\',1)" aria-label="Berikutnya">›</button>'+
-    '</div>'+
-  '</section>';
+  const el=document.createElement('article');
+  el.className='card';
+  el.innerHTML='<div class="thumb"><div class="cup-text"><span class="cup-icon">'+iconFor(p.series)+'</span><span class="cup-brand">intuisi.teh</span><span class="cup-sub">INDONESIA</span></div></div>'+
+    '<div class="card-body"><div class="card-name">'+esc(p.name)+(BEST[p.series]&&BEST[p.series].indexOf(p.name)>=0?'<span class="best">BEST</span>':'')+
+    '</div><div class="card-meta">'+(p.series==='Signature Intuisi Teh'?'Varian: ':'Ukuran: ')+esc(p.size)+
+    '</div><div class="card-price">'+rupiah(p.price)+'</div></div>';
+  return el;
 }
 function renderTabs(){
-  const all=['Semua',...order];
-  document.getElementById('tabs').innerHTML=all.map(s=>
-    '<button type="button" class="tab '+(active===s?'active':'')+'" onclick="setActive(\''+esc(s).replace(/'/g,"\\'")+'\')">'+esc(s)+'</button>'
-  ).join('');
-}
-function setActive(s){
-  active=s;render();
+  const tabs=document.getElementById('tabs');tabs.innerHTML='';
+  ['Semua'].concat(ORDER).forEach(function(s){
+    const b=document.createElement('button');
+    b.type='button';b.className='tab'+(active===s?' active':'');b.textContent=s;
+    b.onclick=function(){active=s;render();};
+    tabs.appendChild(b);
+  });
 }
 function render(){
-  renderTabs();
   const q=(document.getElementById('search').value||'').toLowerCase().trim();
-  const arr=PRODUCTS.filter(p=>
-    (active==='Semua'||p.series===active) &&
-    (!q || (p.name+' '+p.size+' '+p.series).toLowerCase().includes(q))
-  );
-  const grouped=groupProducts(arr);
-  document.getElementById('sections').innerHTML=order.filter(s=>grouped[s]?.length)
-    .map(s=>sectionTemplate(s,grouped[s])).join('')
-    || '<div style="padding:45px;text-align:center;color:#718078">Menu tidak ditemukan.</div>';
-}
-function slide(id,dir){
-  const t=document.getElementById('track-'+id);
-  if(!t)return;
-  t.scrollBy({left:dir*Math.max(240,t.clientWidth*.75),behavior:'smooth'});
-}
-function toggleSection(id){
-  const sec=document.getElementById('sec-'+id);
-  if(sec)sec.classList.toggle('expanded');
+  renderTabs();
+  const filtered=PRODUCTS.filter(function(p){
+    return (active==='Semua'||p[3]===active) &&
+      (!q || (p[0]+' '+p[1]+' '+p[3]).toLowerCase().indexOf(q)>=0);
+  });
+  const root=document.getElementById('sections');root.innerHTML='';
+  ORDER.forEach(function(series){
+    const items=filtered.filter(function(p){return p[3]===series;});
+    if(!items.length)return;
+    const sec=document.createElement('section');sec.className='section';
+    const top=document.createElement('div');top.className='section-top';
+    const title=document.createElement('div');title.className='section-title';
+    title.innerHTML='<span class="dot"></span><h2>'+esc(series)+'</h2>';
+    const all=document.createElement('button');all.className='see-all';all.textContent='Lihat Semua ›';
+    top.appendChild(title);top.appendChild(all);sec.appendChild(top);
+    const wrap=document.createElement('div');wrap.className='carousel';
+    const left=document.createElement('button');left.className='arrow left';left.textContent='‹';
+    const right=document.createElement('button');right.className='arrow right';right.textContent='›';
+    const track=document.createElement('div');track.className='track';
+    const allItems=document.createElement('div');allItems.className='all-items';
+    items.forEach(function(p){track.appendChild(card(p));allItems.appendChild(card(p));});
+    wrap.appendChild(left);wrap.appendChild(track);wrap.appendChild(allItems);wrap.appendChild(right);sec.appendChild(wrap);root.appendChild(sec);
+    left.onclick=function(){track.scrollBy({left:-Math.max(260,track.clientWidth*.75),behavior:'smooth'});};
+    right.onclick=function(){track.scrollBy({left:Math.max(260,track.clientWidth*.75),behavior:'smooth'});};
+    all.onclick=function(){
+      sec.classList.toggle('expanded');
+      all.textContent=sec.classList.contains('expanded')?'Tutup':'Lihat Semua ›';
+    };
+  });
+  if(!root.children.length)root.innerHTML='<div class="empty">Menu tidak ditemukan.</div>';
 }
 render();
 </script>
