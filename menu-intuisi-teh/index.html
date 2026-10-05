@@ -101,6 +101,40 @@ a{text-decoration:none;color:inherit}
   font-weight:900;font-size:12px;cursor:pointer
 }
 .tab.active{background:var(--green);border-color:var(--green);color:#fff}
+.size-filter-wrap{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:2px;
+  padding:10px 0 0;
+  border-top:1px solid var(--line);
+}
+.size-filter-wrap.hidden{display:none!important}
+.size-label-title{
+  flex:0 0 auto;
+  font-size:12px;
+  font-weight:900;
+  color:var(--green-dark);
+}
+.size-tabs{display:flex;gap:7px;flex-wrap:wrap}
+.size-tab{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--green-dark);
+  padding:8px 13px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  cursor:pointer;
+}
+.size-tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.menu-section.is-hidden{display:none!important}
+.product-card.is-hidden{display:none!important}
+.menu-section.single-view .see-all{display:none}
+@media(max-width:720px){
+  .size-filter-wrap{align-items:flex-start;flex-direction:column}
+}
 
 /* Category sections */
 .section{
@@ -294,8 +328,12 @@ a{text-decoration:none;color:inherit}
   </header>
 
   <div class="tools">
-    <input id="search" class="search" placeholder="Cari menu favorit..." oninput="render()">
-    <div id="tabs" class="tabs"></div>
+    <input id="search" class="search" placeholder="Cari menu favorit...">
+    <div id="tabs" class="tabs" aria-label="Pilih series"></div>
+    <div id="sizeFilter" class="size-filter-wrap hidden">
+      <span class="size-label-title">Ukuran</span>
+      <div id="sizeTabs" class="size-tabs" aria-label="Pilih ukuran"></div>
+    </div>
   </div>
 
   <main id="sections"><section class="menu-section" id="sec-tea-series" data-series="Tea Series">
@@ -1390,41 +1428,93 @@ a{text-decoration:none;color:inherit}
 
 <script>
 (function(){
-  function cards(){return Array.prototype.slice.call(document.querySelectorAll('.product-card'));}
+  var ORDER=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
+  var activeSeries='Semua';
+  var activeSize='Semua';
   var search=document.getElementById('search');
   var tabs=document.getElementById('tabs');
-  var sections=Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
-  function filter(){
-    var q=(search.value||'').toLowerCase().trim();
-    cards().forEach(function(card){
-      card.style.display=(!q || card.getAttribute('data-search').indexOf(q)>=0)?'':'none';
-    });
-    sections.forEach(function(sec){
-      var visible=sec.querySelectorAll('.product-card:not([style*="display: none"])').length;
-      sec.style.display=visible?'':'none';
+  var sizeWrap=document.getElementById('sizeFilter');
+  var sizeTabs=document.getElementById('sizeTabs');
+
+  function escAttr(v){
+    return String(v).replace(/"/g,'&quot;');
+  }
+  function sectionList(){
+    return Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
+  }
+  function cardSize(card){
+    var meta=card.querySelector('.product-meta');
+    if(!meta)return '';
+    var t=meta.textContent||'';
+    var m=t.match(/(?:Ukuran|Varian):\s*(.+)/i);
+    return m?m[1].trim():'';
+  }
+  function renderSeriesTabs(){
+    tabs.innerHTML='';
+    ['Semua'].concat(ORDER).forEach(function(s){
+      var b=document.createElement('button');
+      b.type='button';
+      b.className='tab'+(activeSeries===s?' active':'');
+      b.textContent=s;
+      b.dataset.series=s;
+      b.onclick=function(){activeSeries=s;activeSize='Semua';renderSizeTabs();applyFilters();renderSeriesTabs();};
+      tabs.appendChild(b);
     });
   }
-  if(search) search.addEventListener('input',filter);
-  if(tabs) tabs.addEventListener('click',function(e){
-    var b=e.target.closest('.tab');
-    if(!b)return;
-    var text=b.textContent.trim();
-    if(text==='Semua'){window.scrollTo({top:0,behavior:'smooth'});return;}
-    var target=document.querySelector('.menu-section[data-series="'+text.replace(/"/g,'\\\"')+'"]');
-    if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
-  });
-  sections.forEach(function(sec){
-    var track=sec.querySelector('.track');
-    var left=sec.querySelector('.arrow.left'), right=sec.querySelector('.arrow.right');
-    var see=sec.querySelector('.see-all');
-    if(left) left.onclick=function(){track.scrollBy({left:-Math.max(280,track.clientWidth*.7),behavior:'smooth'});};
-    if(right) right.onclick=function(){track.scrollBy({left:Math.max(280,track.clientWidth*.7),behavior:'smooth'});};
-    if(see) see.onclick=function(){
-      var expanded=sec.classList.toggle('expanded');
-      see.textContent=expanded?'Tutup':'Lihat Semua ›';
-      if(expanded) track.style.flexWrap='wrap'; else track.style.flexWrap='nowrap';
-    };
-  });
+  function availableSizes(){
+    var list=[];
+    sectionList().forEach(function(sec){
+      if(activeSeries!=='Semua' && sec.dataset.series!==activeSeries)return;
+      Array.prototype.slice.call(sec.querySelectorAll('.product-card')).forEach(function(card){
+        var sz=cardSize(card);
+        if(sz && list.indexOf(sz)<0)list.push(sz);
+      });
+    });
+    var preferred=['S','M','L','STD','Yakult','Yoghurt Breeze'];
+    return preferred.filter(function(s){return list.indexOf(s)>=0;});
+  }
+  function renderSizeTabs(){
+    var sizes=availableSizes();
+    if(activeSeries==='Semua' || sizes.length<=0){
+      sizeWrap.classList.add('hidden');
+      sizeTabs.innerHTML='';
+      return;
+    }
+    sizeWrap.classList.remove('hidden');
+    sizeTabs.innerHTML='';
+    ['Semua'].concat(sizes).forEach(function(s){
+      var b=document.createElement('button');
+      b.type='button';
+      b.className='size-tab'+(activeSize===s?' active':'');
+      b.textContent=s==='Semua'?'Semua Ukuran':s;
+      b.dataset.size=s;
+      b.onclick=function(){activeSize=s;applyFilters();renderSizeTabs();};
+      sizeTabs.appendChild(b);
+    });
+  }
+  function applyFilters(){
+    var q=(search.value||'').toLowerCase().trim();
+    sectionList().forEach(function(sec){
+      var showSeries=activeSeries==='Semua'||sec.dataset.series===activeSeries;
+      sec.classList.toggle('is-hidden',!showSeries);
+      sec.classList.toggle('single-view',activeSeries!=='Semua');
+      var visible=0;
+      Array.prototype.slice.call(sec.querySelectorAll('.product-card')).forEach(function(card){
+        var data=(card.getAttribute('data-search')||'').toLowerCase();
+        var sz=cardSize(card);
+        var show=!q||data.indexOf(q)>=0;
+        if(activeSize!=='Semua')show=show && sz===activeSize;
+        card.classList.toggle('is-hidden',!show);
+        if(show)visible++;
+      });
+      sec.querySelector('.count').textContent=visible+' item';
+      sec.classList.toggle('is-hidden',!showSeries||visible===0);
+    });
+  }
+  if(search)search.addEventListener('input',applyFilters);
+  renderSeriesTabs();
+  renderSizeTabs();
+  applyFilters();
 })();
 </script>
 </body>
