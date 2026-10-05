@@ -159,11 +159,26 @@ a{text-decoration:none;color:inherit}
   position:absolute;width:110px;height:110px;border-radius:50%;
   background:rgba(255,255,255,.45);right:-34px;top:-34px
 }
-.product-photo{
-  position:relative;z-index:2;
-  width:100%;height:100%;object-fit:cover;
-  display:block;background:#e5efe9;
+.cup-text{
+  position:relative;z-index:3;
+  width:92px;height:105px;
+  border:3px solid #315d49;
+  border-radius:12px 12px 18px 18px;
+  background:linear-gradient(180deg,#fff 0 18%,#e8f2ec 18% 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#0b6542;
+  box-shadow:0 7px 16px rgba(31,75,55,.14);
+  text-align:center;
 }
+.cup-text:before{
+  content:"";
+  position:absolute;left:8px;right:8px;top:6px;height:8px;
+  border:2px solid #315d49;border-radius:50%;background:#fff;
+}
+.cup-icon{font-size:25px;line-height:1;margin-bottom:7px}
+.cup-brand{font-size:10px;font-weight:900;letter-spacing:.2px}
+.cup-sub{font-size:6px;letter-spacing:2px;margin-top:2px;font-weight:800}
+
 .card-body{padding:11px 12px 12px}
 .card-name{
   font-size:13px;font-weight:900;line-height:1.2;min-height:31px
@@ -382,8 +397,32 @@ function groupProducts(arr){
   arr.forEach(p=>(grouped[p.series]??=[]).push(p));
   return grouped;
 }
-const CUP_IMAGE='https://images.unsplash.com/photo-1681974913878-1c446bac7cf5?auto=format&fit=crop&w=700&q=80';
-function photoFor(p){ return CUP_IMAGE; }
+function cupIcon(series){
+  const icons={
+    'Tea Series':'🍃',
+    'Milk Base':'🥛',
+    'Coffee Latte':'☕',
+    'New Product':'✨',
+    'Signature Intuisi Teh':'🍓',
+    'Mocktail':'🍹'
+  };
+  return icons[series]||'🥤';
+}
+function card(p){
+  const best=BEST[p.series]?.has(p.name);
+  return '<article class="card">'+
+    '<div class="thumb"><div class="cup-text">'+
+      '<span class="cup-icon">'+cupIcon(p.series)+'</span>'+
+      '<span class="cup-brand">intuisi.teh</span>'+
+      '<span class="cup-sub">INDONESIA</span>'+
+    '</div></div>'+
+    '<div class="card-body">'+
+      '<div class="card-name">'+esc(p.name)+(best?'<span class="best">BEST</span>':'')+'</div>'+
+      '<div class="card-meta">'+(p.series==='Signature Intuisi Teh'?'Varian: ':'Ukuran: ')+esc(p.size)+'</div>'+
+      '<div class="card-price">'+rupiah(p.price)+'</div>'+
+    '</div>'+
+  '</article>';
+}
 function sectionTemplate(series,items){
   const id=idSlug(series);
   return '<section class="section" id="sec-'+id+'">'+
