@@ -127,24 +127,41 @@ a{text-decoration:none;color:inherit}
   position:relative;
 }
 .track{
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:calc((100% - 30px)/4);
+  display:flex;
   gap:10px;
   overflow-x:auto;
+  overflow-y:hidden;
   scroll-behavior:smooth;
   scrollbar-width:none;
-  padding:3px 2px 8px
+  padding:3px 2px 10px
 }
 .track::-webkit-scrollbar{display:none}
-.card{
-  min-width:0;
+.product-card{
+  flex:0 0 220px;
   border:1px solid #edf0ee;
   border-radius:14px;
   background:#fff;
   box-shadow:var(--shadow);
   overflow:hidden;
+  padding-bottom:12px;
 }
+.cup{
+  height:150px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#eef7f1,#d9ece0);
+}
+.cup:after{content:"";position:absolute;width:115px;height:115px;border-radius:50%;background:rgba(255,255,255,.42);right:-35px;top:-35px}
+.cup-text{}
+.cup-top{position:absolute;z-index:3;top:35px;width:92px;height:12px;border:3px solid #315d49;border-radius:50%;background:#fff}
+.cup-logo{position:absolute;z-index:4;top:87px;width:90px;text-align:center;color:#173b2c;font-weight:900;font-size:10px}
+.cup-logo small{display:block;font-size:5px;letter-spacing:1.2px;margin-top:2px}
+.cup-content{position:absolute;z-index:2;top:50px;width:82px;height:75px;border-radius:10px 10px 18px 18px;border:3px solid #315d49;background:linear-gradient(180deg,#fff 0 13%,#e7f1eb 14% 100%);display:flex;align-items:center;justify-content:center;font-size:27px}
+.card-body{}
+
 .thumb{
   height:136px;
   display:flex;
@@ -179,12 +196,9 @@ a{text-decoration:none;color:inherit}
 .cup-brand{font-size:10px;font-weight:900;letter-spacing:.2px}
 .cup-sub{font-size:6px;letter-spacing:2px;margin-top:2px;font-weight:800}
 
-.card-body{padding:11px 12px 12px}
-.card-name{
-  font-size:13px;font-weight:900;line-height:1.2;min-height:31px
-}
-.card-meta{font-size:10px;color:var(--muted);margin-top:5px}
-.card-price{margin-top:8px;font-size:13px;color:#a84242;font-weight:900}
+.product-card .product-name{padding:11px 12px 0;font-size:13px;font-weight:900;line-height:1.2;min-height:32px}
+.product-meta{padding:5px 12px 0;font-size:10px;color:var(--muted)}
+.product-price{padding:8px 12px 0;font-size:13px;color:#a84242;font-weight:900}
 .best{
   display:inline-block;margin-left:5px;padding:3px 5px;border-radius:999px;
   background:#fff3bd;color:#8c6b00;font-size:8px;vertical-align:2px
@@ -204,11 +218,6 @@ a{text-decoration:none;color:inherit}
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:10px;
 }
-.section.expanded .track{display:none}
-.section.expanded .all-items{display:grid}
-.section.expanded .see-all:after{content:" Tutup"}
-.section.expanded .see-all{font-size:0}
-.section.expanded .see-all:after{font-size:12px}
 
 .notice{
   margin-top:22px;
@@ -238,29 +247,26 @@ a{text-decoration:none;color:inherit}
   .page{max-width:none;padding:8mm}
   .top-actions,.tools,.arrow,.see-all,.notice{display:none!important}
   .hero{box-shadow:none;min-height:170px}
-  .track{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-flow:row;overflow:visible}
-  .all-items{display:none!important}
+  .track{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
+  .product-card{flex-basis:auto}
   .section{break-inside:avoid}
 }
 
 @media(max-width:1000px){
-  .track{grid-auto-columns:calc((100% - 20px)/3)}
-  .all-items{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .product-card{flex-basis:210px}
 }
 @media(max-width:720px){
   .page{padding:0 12px 22px}
   .hero{min-height:220px;padding:24px}
   .hero h1{font-size:31px}
-  .track{grid-auto-columns:calc((100% - 10px)/2)}
-  .all-items{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .product-card{flex-basis:47%}
   .footer{grid-template-columns:1fr}
 }
 @media(max-width:460px){
   .topbar{align-items:flex-start}
   .top-actions{display:none}
   .hero h1{font-size:28px}
-  .track{grid-auto-columns:82%}
-  .all-items{grid-template-columns:1fr}
+  .product-card{flex-basis:82%}
   .thumb{height:125px}
 }
 </style>
@@ -292,7 +298,1075 @@ a{text-decoration:none;color:inherit}
     <div id="tabs" class="tabs"></div>
   </div>
 
-  <main id="sections"></main>
+  <main id="sections"><section class="menu-section" id="sec-tea-series" data-series="Tea Series">
+    <div class="section-top">
+      <div class="section-title"><span class="bar"></span><h2>Tea Series</h2><span class="count">17 item</span></div>
+      <button class="see-all" type="button">Lihat Semua ›</button>
+    </div>
+    <div class="menu-carousel">
+      <button class="arrow left" type="button" aria-label="Sebelumnya">‹</button>
+      <div class="track"><article class="product-card" data-search="intuisi tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Intuisi Tea<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 4.000</div>
+  </article><article class="product-card" data-search="green tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Green Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="pandan tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Pandan Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="vanilla tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Vanilla Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="lychee tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Lychee Tea<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="lemon tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Lemon Tea<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="peach tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Peach Tea<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="apple tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Apple Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="mango tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Mango Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="strawberry tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Strawberry Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="passion tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Passion Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="grape tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Grape Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="melon tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Melon Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 6.000</div>
+  </article><article class="product-card" data-search="milk tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Milk Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 10.000</div>
+  </article><article class="product-card" data-search="thai tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Thai Tea<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="thai green tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Thai Green Tea</div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="milo tea std tea series">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍃</div>
+    </div>
+    <div class="product-name">Milo Tea<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: STD</div>
+    <div class="product-price">Rp 15.000</div>
+  </article></div>
+      <button class="arrow right" type="button" aria-label="Berikutnya">›</button>
+    </div>
+  </section><section class="menu-section" id="sec-milk-base" data-series="Milk Base">
+    <div class="section-top">
+      <div class="section-title"><span class="bar"></span><h2>Milk Base</h2><span class="count">38 item</span></div>
+      <button class="see-all" type="button">Lihat Semua ›</button>
+    </div>
+    <div class="menu-carousel">
+      <button class="arrow left" type="button" aria-label="Sebelumnya">‹</button>
+      <div class="track"><article class="product-card" data-search="matcha s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Matcha<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="matcha m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Matcha<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="black oreo s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Black Oreo<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="black oreo m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Black Oreo<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="black oreo l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Black Oreo<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="choco ovaltine s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Ovaltine</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="choco ovaltine m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Ovaltine</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="choco ovaltine l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Ovaltine</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="red velvet s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Red Velvet<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="red velvet m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Red Velvet<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="red velvet l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Red Velvet<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="taro s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Taro<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="taro m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Taro<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="taro l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Taro<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="dark choco s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Dark Choco</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="dark choco m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Dark Choco</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="dark choco l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Dark Choco</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="choco milo s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Milo</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="choco milo m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Milo</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="choco milo l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Milo</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="choco creamy s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Creamy<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="choco creamy m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Creamy<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="choco creamy l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Creamy<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="choco hazelnut s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Hazelnut</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="choco hazelnut m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Hazelnut</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="choco hazelnut l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Choco Hazelnut</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="tiramisu s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Tiramisu</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="tiramisu m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Tiramisu</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="tiramisu l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Tiramisu</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="avocado s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Avocado</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="avocado m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Avocado</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="avocado l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Avocado</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="banana uyu s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Banana Uyu</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="banana uyu m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Banana Uyu</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="banana uyu l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Banana Uyu</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article><article class="product-card" data-search="bubblegum s milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Bubblegum</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="bubblegum m milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Bubblegum</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="bubblegum l milk base">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🥛</div>
+    </div>
+    <div class="product-name">Bubblegum</div>
+    <div class="product-meta">Ukuran: L</div>
+    <div class="product-price">Rp 20.000</div>
+  </article></div>
+      <button class="arrow right" type="button" aria-label="Berikutnya">›</button>
+    </div>
+  </section><section class="menu-section" id="sec-coffee-latte" data-series="Coffee Latte">
+    <div class="section-top">
+      <div class="section-title"><span class="bar"></span><h2>Coffee Latte</h2><span class="count">26 item</span></div>
+      <button class="see-all" type="button">Lihat Semua ›</button>
+    </div>
+    <div class="menu-carousel">
+      <button class="arrow left" type="button" aria-label="Sebelumnya">‹</button>
+      <div class="track"><article class="product-card" data-search="americano s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Americano</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 10.000</div>
+  </article><article class="product-card" data-search="americano m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Americano</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 13.000</div>
+  </article><article class="product-card" data-search="intuisi latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Intuisi Latte<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 13.000</div>
+  </article><article class="product-card" data-search="intuisi latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Intuisi Latte<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="spanish latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Spanish Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="spanish latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Spanish Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="brown sugar latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Brown Sugar Latte<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="brown sugar latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Brown Sugar Latte<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="salted caramel s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Salted Caramel</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="salted caramel m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Salted Caramel</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="butterscotch s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Butterscotch</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="butterscotch m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Butterscotch</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="pandan aren latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Pandan Aren Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="pandan aren latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Pandan Aren Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="vanilla latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Vanilla Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="vanilla latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Vanilla Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="tiramisu latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Tiramisu Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="tiramisu latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Tiramisu Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="hazelnut latte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Hazelnut Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 16.000</div>
+  </article><article class="product-card" data-search="hazelnut latte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Hazelnut Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="cappuccino s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Cappuccino<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 16.000</div>
+  </article><article class="product-card" data-search="cappuccino m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Cappuccino<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="banana delight s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Banana Delight</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 16.000</div>
+  </article><article class="product-card" data-search="banana delight m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Banana Delight</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="avolatte s coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Avolatte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="avolatte m coffee latte">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Avolatte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 20.000</div>
+  </article></div>
+      <button class="arrow right" type="button" aria-label="Berikutnya">›</button>
+    </div>
+  </section><section class="menu-section" id="sec-new-product" data-series="New Product">
+    <div class="section-top">
+      <div class="section-title"><span class="bar"></span><h2>New Product</h2><span class="count">6 item</span></div>
+      <button class="see-all" type="button">Lihat Semua ›</button>
+    </div>
+    <div class="menu-carousel">
+      <button class="arrow left" type="button" aria-label="Sebelumnya">‹</button>
+      <div class="track"><article class="product-card" data-search="almond latte s new product">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Almond Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="almond latte m new product">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Almond Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="pistachio latte s new product">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Pistachio Latte</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="pistachio latte m new product">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Pistachio Latte</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="caramel macchiato s new product">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Caramel Macchiato</div>
+    <div class="product-meta">Ukuran: S</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="caramel macchiato m new product">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">☕</div>
+    </div>
+    <div class="product-name">Caramel Macchiato</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 20.000</div>
+  </article></div>
+      <button class="arrow right" type="button" aria-label="Berikutnya">›</button>
+    </div>
+  </section><section class="menu-section" id="sec-signature-intuisi-teh" data-series="Signature Intuisi Teh">
+    <div class="section-top">
+      <div class="section-title"><span class="bar"></span><h2>Signature Intuisi Teh</h2><span class="count">14 item</span></div>
+      <button class="see-all" type="button">Lihat Semua ›</button>
+    </div>
+    <div class="menu-carousel">
+      <button class="arrow left" type="button" aria-label="Sebelumnya">‹</button>
+      <div class="track"><article class="product-card" data-search="lychee yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Lychee</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="lychee yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Lychee</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="mango yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Mango</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="mango yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Mango</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="melon yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Melon</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="melon yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Melon</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="grape yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Grape</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="grape yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Grape</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="strawberry yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Strawberry</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="strawberry yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Strawberry</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="peach yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Peach</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="peach yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Peach</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article><article class="product-card" data-search="lemon yakult signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Lemon</div>
+    <div class="product-meta">Varian: Yakult</div>
+    <div class="product-price">Rp 15.000</div>
+  </article><article class="product-card" data-search="lemon yoghurt breeze signature intuisi teh">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍓</div>
+    </div>
+    <div class="product-name">Lemon</div>
+    <div class="product-meta">Varian: Yoghurt Breeze</div>
+    <div class="product-price">Rp 18.000</div>
+  </article></div>
+      <button class="arrow right" type="button" aria-label="Berikutnya">›</button>
+    </div>
+  </section><section class="menu-section" id="sec-mocktail" data-series="Mocktail">
+    <div class="section-top">
+      <div class="section-title"><span class="bar"></span><h2>Mocktail</h2><span class="count">11 item</span></div>
+      <button class="see-all" type="button">Lihat Semua ›</button>
+    </div>
+    <div class="menu-carousel">
+      <button class="arrow left" type="button" aria-label="Sebelumnya">‹</button>
+      <div class="track"><article class="product-card" data-search="lychee squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Lychee Squash<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="lemon squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Lemon Squash<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="peach squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Peach Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="apple squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Apple Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="mango squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Mango Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="strawberry squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Strawberry Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="passion squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Passion Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="grape squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Grape Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="melon squash m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Melon Squash</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="lemonade mojito m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Lemonade Mojito</div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article><article class="product-card" data-search="blue ocean m mocktail">
+    <div class="cup">
+      <div class="cup-top"></div>
+      <div class="cup-logo">intuisi.teh<small>INDONESIA</small></div>
+      <div class="cup-content">🍹</div>
+    </div>
+    <div class="product-name">Blue Ocean<span class="best">BEST</span></div>
+    <div class="product-meta">Ukuran: M</div>
+    <div class="product-price">Rp 12.000</div>
+  </article></div>
+      <button class="arrow right" type="button" aria-label="Berikutnya">›</button>
+    </div>
+  </section></main>
 
   <div class="notice">
     Untuk ukuran minuman, harga akan mengikuti pilihan <b>Small (S)</b>, <b>Medium (M)</b>, atau <b>Large (L)</b> sesuai menu.
@@ -315,131 +1389,43 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
-const PRODUCTS=[
-['Intuisi Tea','STD',4000,'Tea Series'],['Green Tea','STD',6000,'Tea Series'],['Pandan Tea','STD',6000,'Tea Series'],
-['Vanilla Tea','STD',6000,'Tea Series'],['Lychee Tea','STD',6000,'Tea Series'],['Lemon Tea','STD',6000,'Tea Series'],
-['Peach Tea','STD',6000,'Tea Series'],['Apple Tea','STD',6000,'Tea Series'],['Mango Tea','STD',6000,'Tea Series'],
-['Strawberry Tea','STD',6000,'Tea Series'],['Passion Tea','STD',6000,'Tea Series'],['Grape Tea','STD',6000,'Tea Series'],
-['Melon Tea','STD',6000,'Tea Series'],['Milk Tea','STD',10000,'Tea Series'],['Thai Tea','STD',15000,'Tea Series'],
-['Thai Green Tea','STD',15000,'Tea Series'],['Milo Tea','STD',15000,'Tea Series'],
-
-['Matcha','S',15000,'Milk Base'],['Matcha','M',18000,'Milk Base'],
-['Black Oreo','S',15000,'Milk Base'],['Black Oreo','M',18000,'Milk Base'],['Black Oreo','L',20000,'Milk Base'],
-['Choco Ovaltine','S',15000,'Milk Base'],['Choco Ovaltine','M',18000,'Milk Base'],['Choco Ovaltine','L',20000,'Milk Base'],
-['Red Velvet','S',15000,'Milk Base'],['Red Velvet','M',18000,'Milk Base'],['Red Velvet','L',20000,'Milk Base'],
-['Taro','S',15000,'Milk Base'],['Taro','M',18000,'Milk Base'],['Taro','L',20000,'Milk Base'],
-['Dark Choco','S',15000,'Milk Base'],['Dark Choco','M',18000,'Milk Base'],['Dark Choco','L',20000,'Milk Base'],
-['Choco Milo','S',15000,'Milk Base'],['Choco Milo','M',18000,'Milk Base'],['Choco Milo','L',20000,'Milk Base'],
-['Choco Creamy','S',15000,'Milk Base'],['Choco Creamy','M',18000,'Milk Base'],['Choco Creamy','L',20000,'Milk Base'],
-['Choco Hazelnut','S',15000,'Milk Base'],['Choco Hazelnut','M',18000,'Milk Base'],['Choco Hazelnut','L',20000,'Milk Base'],
-['Tiramisu','S',15000,'Milk Base'],['Tiramisu','M',18000,'Milk Base'],['Tiramisu','L',20000,'Milk Base'],
-['Avocado','S',15000,'Milk Base'],['Avocado','M',18000,'Milk Base'],['Avocado','L',20000,'Milk Base'],
-['Banana Uyu','S',15000,'Milk Base'],['Banana Uyu','M',18000,'Milk Base'],['Banana Uyu','L',20000,'Milk Base'],
-['Bubblegum','S',15000,'Milk Base'],['Bubblegum','M',18000,'Milk Base'],['Bubblegum','L',20000,'Milk Base'],
-
-['Americano','S',10000,'Coffee Latte'],['Americano','M',13000,'Coffee Latte'],
-['Intuisi Latte','S',13000,'Coffee Latte'],['Intuisi Latte','M',15000,'Coffee Latte'],
-['Spanish Latte','S',15000,'Coffee Latte'],['Spanish Latte','M',18000,'Coffee Latte'],
-['Brown Sugar Latte','S',15000,'Coffee Latte'],['Brown Sugar Latte','M',18000,'Coffee Latte'],
-['Salted Caramel','S',15000,'Coffee Latte'],['Salted Caramel','M',18000,'Coffee Latte'],
-['Butterscotch','S',15000,'Coffee Latte'],['Butterscotch','M',18000,'Coffee Latte'],
-['Pandan Aren Latte','S',15000,'Coffee Latte'],['Pandan Aren Latte','M',18000,'Coffee Latte'],
-['Vanilla Latte','S',15000,'Coffee Latte'],['Vanilla Latte','M',18000,'Coffee Latte'],
-['Tiramisu Latte','S',15000,'Coffee Latte'],['Tiramisu Latte','M',18000,'Coffee Latte'],
-['Hazelnut Latte','S',16000,'Coffee Latte'],['Hazelnut Latte','M',18000,'Coffee Latte'],
-['Cappuccino','S',16000,'Coffee Latte'],['Cappuccino','M',18000,'Coffee Latte'],
-['Banana Delight','S',16000,'Coffee Latte'],['Banana Delight','M',18000,'Coffee Latte'],
-['Avolatte','S',18000,'Coffee Latte'],['Avolatte','M',20000,'Coffee Latte'],
-
-['Almond Latte','S',15000,'New Product'],['Almond Latte','M',18000,'New Product'],
-['Pistachio Latte','S',15000,'New Product'],['Pistachio Latte','M',18000,'New Product'],
-['Caramel Macchiato','S',18000,'New Product'],['Caramel Macchiato','M',20000,'New Product'],
-
-['Lychee','Yakult',15000,'Signature Intuisi Teh'],['Lychee','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-['Mango','Yakult',15000,'Signature Intuisi Teh'],['Mango','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-['Melon','Yakult',15000,'Signature Intuisi Teh'],['Melon','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-['Grape','Yakult',15000,'Signature Intuisi Teh'],['Grape','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-['Strawberry','Yakult',15000,'Signature Intuisi Teh'],['Strawberry','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-['Peach','Yakult',15000,'Signature Intuisi Teh'],['Peach','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-['Lemon','Yakult',15000,'Signature Intuisi Teh'],['Lemon','Yoghurt Breeze',18000,'Signature Intuisi Teh'],
-
-['Lychee Squash','M',12000,'Mocktail'],['Lemon Squash','M',12000,'Mocktail'],['Peach Squash','M',12000,'Mocktail'],
-['Apple Squash','M',12000,'Mocktail'],['Mango Squash','M',12000,'Mocktail'],['Strawberry Squash','M',12000,'Mocktail'],
-['Passion Squash','M',12000,'Mocktail'],['Grape Squash','M',12000,'Mocktail'],['Melon Squash','M',12000,'Mocktail'],
-['Lemonade Mojito','M',12000,'Mocktail'],['Blue Ocean','M',12000,'Mocktail']
-];
-
-const BEST={
-  'Tea Series':['Intuisi Tea','Lychee Tea','Lemon Tea','Peach Tea','Thai Tea','Milo Tea'],
-  'Milk Base':['Matcha','Black Oreo','Red Velvet','Taro','Choco Creamy'],
-  'Coffee Latte':['Intuisi Latte','Brown Sugar Latte','Cappuccino'],
-  'Mocktail':['Lemon Squash','Lychee Squash','Blue Ocean']
-};
-const ORDER=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
-let active='Semua';
-
-function rupiah(n){
-  return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0})
-    .format(n).replace('IDR','Rp').replace(',00','');
-}
-function esc(v){
-  const d=document.createElement('div');d.textContent=v;return d.innerHTML;
-}
-function iconFor(s){
-  return {'Tea Series':'🍃','Milk Base':'🥛','Coffee Latte':'☕','New Product':'✨','Signature Intuisi Teh':'🍓','Mocktail':'🍹'}[s]||'🥤';
-}
-function card(p){
-  const el=document.createElement('article');
-  el.className='card';
-  el.innerHTML='<div class="thumb"><div class="cup-text"><span class="cup-icon">'+iconFor(p.series)+'</span><span class="cup-brand">intuisi.teh</span><span class="cup-sub">INDONESIA</span></div></div>'+
-    '<div class="card-body"><div class="card-name">'+esc(p.name)+(BEST[p.series]&&BEST[p.series].indexOf(p.name)>=0?'<span class="best">BEST</span>':'')+
-    '</div><div class="card-meta">'+(p.series==='Signature Intuisi Teh'?'Varian: ':'Ukuran: ')+esc(p.size)+
-    '</div><div class="card-price">'+rupiah(p.price)+'</div></div>';
-  return el;
-}
-function renderTabs(){
-  const tabs=document.getElementById('tabs');tabs.innerHTML='';
-  ['Semua'].concat(ORDER).forEach(function(s){
-    const b=document.createElement('button');
-    b.type='button';b.className='tab'+(active===s?' active':'');b.textContent=s;
-    b.onclick=function(){active=s;render();};
-    tabs.appendChild(b);
+(function(){
+  function cards(){return Array.prototype.slice.call(document.querySelectorAll('.product-card'));}
+  var search=document.getElementById('search');
+  var tabs=document.getElementById('tabs');
+  var sections=Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
+  function filter(){
+    var q=(search.value||'').toLowerCase().trim();
+    cards().forEach(function(card){
+      card.style.display=(!q || card.getAttribute('data-search').indexOf(q)>=0)?'':'none';
+    });
+    sections.forEach(function(sec){
+      var visible=sec.querySelectorAll('.product-card:not([style*="display: none"])').length;
+      sec.style.display=visible?'':'none';
+    });
+  }
+  if(search) search.addEventListener('input',filter);
+  if(tabs) tabs.addEventListener('click',function(e){
+    var b=e.target.closest('.tab');
+    if(!b)return;
+    var text=b.textContent.trim();
+    if(text==='Semua'){window.scrollTo({top:0,behavior:'smooth'});return;}
+    var target=document.querySelector('.menu-section[data-series="'+text.replace(/"/g,'\\\"')+'"]');
+    if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
   });
-}
-function render(){
-  const q=(document.getElementById('search').value||'').toLowerCase().trim();
-  renderTabs();
-  const filtered=PRODUCTS.filter(function(p){
-    return (active==='Semua'||p[3]===active) &&
-      (!q || (p[0]+' '+p[1]+' '+p[3]).toLowerCase().indexOf(q)>=0);
-  });
-  const root=document.getElementById('sections');root.innerHTML='';
-  ORDER.forEach(function(series){
-    const items=filtered.filter(function(p){return p[3]===series;});
-    if(!items.length)return;
-    const sec=document.createElement('section');sec.className='section';
-    const top=document.createElement('div');top.className='section-top';
-    const title=document.createElement('div');title.className='section-title';
-    title.innerHTML='<span class="dot"></span><h2>'+esc(series)+'</h2>';
-    const all=document.createElement('button');all.className='see-all';all.textContent='Lihat Semua ›';
-    top.appendChild(title);top.appendChild(all);sec.appendChild(top);
-    const wrap=document.createElement('div');wrap.className='carousel';
-    const left=document.createElement('button');left.className='arrow left';left.textContent='‹';
-    const right=document.createElement('button');right.className='arrow right';right.textContent='›';
-    const track=document.createElement('div');track.className='track';
-    const allItems=document.createElement('div');allItems.className='all-items';
-    items.forEach(function(p){track.appendChild(card(p));allItems.appendChild(card(p));});
-    wrap.appendChild(left);wrap.appendChild(track);wrap.appendChild(allItems);wrap.appendChild(right);sec.appendChild(wrap);root.appendChild(sec);
-    left.onclick=function(){track.scrollBy({left:-Math.max(260,track.clientWidth*.75),behavior:'smooth'});};
-    right.onclick=function(){track.scrollBy({left:Math.max(260,track.clientWidth*.75),behavior:'smooth'});};
-    all.onclick=function(){
-      sec.classList.toggle('expanded');
-      all.textContent=sec.classList.contains('expanded')?'Tutup':'Lihat Semua ›';
+  sections.forEach(function(sec){
+    var track=sec.querySelector('.track');
+    var left=sec.querySelector('.arrow.left'), right=sec.querySelector('.arrow.right');
+    var see=sec.querySelector('.see-all');
+    if(left) left.onclick=function(){track.scrollBy({left:-Math.max(280,track.clientWidth*.7),behavior:'smooth'});};
+    if(right) right.onclick=function(){track.scrollBy({left:Math.max(280,track.clientWidth*.7),behavior:'smooth'});};
+    if(see) see.onclick=function(){
+      var expanded=sec.classList.toggle('expanded');
+      see.textContent=expanded?'Tutup':'Lihat Semua ›';
+      if(expanded) track.style.flexWrap='wrap'; else track.style.flexWrap='nowrap';
     };
   });
-  if(!root.children.length)root.innerHTML='<div class="empty">Menu tidak ditemukan.</div>';
-}
-render();
+})();
 </script>
 </body>
 </html>
