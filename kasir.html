@@ -85,7 +85,6 @@ const PRODUCTS=[
 ['Mix Platter','STD',35000,'Food'],
 ['Intuisi Tea','STD',8000,'Tea Series'],
 ['Thai Tea','STD',15000,'Tea Series'],
-['Green Tea','STD',15000,'Tea Series'],
 ['Lemon Tea','STD',12000,'Tea Series'],
 ['Milk Tea','STD',12000,'Tea Series'],
 ['Mango Tea','STD',10000,'Tea Series'],
@@ -96,10 +95,8 @@ const PRODUCTS=[
 ['Oreo','M',20000,'Milk Base'],
 ['Americano','M',15000,'Coffee Base'],
 ['Intuisi Latte','M',18000,'Coffee Base'],
-['Spanish Latte','M',23000,'Coffee Base'],
 ['Aren Latte','M',18000,'Coffee Base'],
 ['Butterscotch Latte','M',20000,'Coffee Base'],
-['Salted Caramel','M',28000,'Coffee Base'],
 ['Blue Ocean','M',20000,'Mocktail'],
 ['Mango Squash','M',20000,'Mocktail'],
 ['Lychee Squash','M',20000,'Mocktail'],
@@ -155,7 +152,7 @@ function renderStats(){
  document.getElementById('stats').innerHTML='<div class="stat"><span>Transaksi hari ini</span><b>'+tod.length+'</b></div><div class="stat"><span>Omzet hari ini</span><b>'+rupiah(omz)+'</b></div><div class="stat"><span>Item terjual</span><b>'+items+'</b></div><div class="stat"><span>Rata-rata transaksi</span><b>'+rupiah(avg)+'</b></div>';
 }
 function showReport(){
- const sales=load(),map={};sales.forEach(s=>s.items.forEach(i=>{const p=PRODUCTS.find(x=>x.name===i.name&&x.size===i.size);const k=p?p.series:'Lainnya';map[k]=(map[k]||0)+i.qty}));
+ const sales=load(),map={};sales.forEach(s=>s.items.forEach(i=>{const p=PRODUCTS.find(x=>x.name===i.name&&x.size===i.size);const legacySeries={'Green Tea':'Tea Series','Spanish Latte':'Coffee Base','Salted Caramel':'Coffee Base'};const k=p?p.series:(legacySeries[i.name]||'Lainnya');map[k]=(map[k]||0)+i.qty}));
  const rows=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v+'</td></tr>').join('');
  document.getElementById('modalContent').innerHTML='<h3 style="margin-top:0">Laporan Penjualan per Series</h3><div class="tablewrap"><table><thead><tr><th>Series</th><th>Item Terjual</th></tr></thead><tbody>'+ (rows||'<tr><td colspan="2" class="empty">Belum ada data.</td></tr>') +'</tbody></table></div>';document.getElementById('modal').style.display='flex';
 }
