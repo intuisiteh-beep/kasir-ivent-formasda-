@@ -298,26 +298,58 @@ function showReport(){
  document.getElementById('modalContent').innerHTML='<h3 style="margin-top:0">Laporan Item Terjual</h3><div class="tablewrap"><table><thead><tr><th>Series</th><th>Item</th></tr></thead><tbody>'+ (rows||'<tr><td colspan="2" class="empty">Belum ada data.</td></tr>') +'</tbody></table></div>';
  document.getElementById('modal').style.display='flex';
 }
-function backup(){const a=document.createElement('a'),b=new Blob([JSON.stringify(load(),null,2)],{type:'application/json'});a.href=URL.createObjectURL(b);a.download='backup-kasir-intuisi-shop-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function backup(){
+ const payload={
+  app:'Kasir Intuisi Shop',
+  backupVersion:2,
+  exportedAt:new Date().toISOString(),
+  products:PRODUCTS,
+  sales:load(),
+  orderCounter:Number(localStorage.getItem(ORDER_COUNTER_KEY)||0)
+ };
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='backup-lengkap-kasir-intuisi-shop-'+today()+'.json';
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ alert('Backup lengkap berhasil dibuat: menu, harga, transaksi, dan nomor pesanan.');
+}
 function restoreBackup(input){
  const file=input.files&&input.files[0];
  if(!file)return;
  const reader=new FileReader();
  reader.onload=function(){
-   try{
-     const data=JSON.parse(reader.result);
-     if(!Array.isArray(data))throw new Error('Format backup tidak valid');
-     const valid=data.every(s=>s&&typeof s==='object'&&Array.isArray(s.items)&&typeof s.total==='number'&&s.time);
-     if(!valid)throw new Error('Struktur data backup tidak sesuai');
-     if(!confirm('Restore backup akan mengganti data transaksi saat ini. Lanjutkan?')){input.value='';return}
-     localStorage.setItem(KEY,JSON.stringify(data));
-     alert('Backup berhasil dipulihkan.');
-     renderHistory();renderStats();
-     input.value='';
-   }catch(e){
-     alert('Gagal restore: '+e.message);
-     input.value='';
+  try{
+   const data=JSON.parse(reader.result);
+   const isFullBackup=!!data&&typeof data==='object'&&!Array.isArray(data)&&Array.isArray(data.sales)&&Array.isArray(data.products);
+   const sales=isFullBackup?data.sales:data;
+   if(!Array.isArray(sales))throw new Error('Format backup tidak dikenali.');
+   const validSales=sales.every(s=>s&&typeof s==='object'&&Array.isArray(s.items)&&typeof s.total==='number'&&s.time);
+   if(!validSales)throw new Error('Data transaksi pada backup tidak valid.');
+   let products=PRODUCTS;
+   if(isFullBackup){
+    const validProducts=data.products.every(p=>p&&typeof p==='object'&&Number.isFinite(Number(p.id))&&String(p.name||'').trim()&&String(p.series||'').trim()&&String(p.size||'').trim()&&Number.isFinite(Number(p.price))&&Number(p.price)>=0);
+    if(!validProducts)throw new Error('Data menu pada backup tidak valid.');
+    products=data.products;
    }
+   const message=isFullBackup
+    ?'Restore akan mengganti menu dan harga serta seluruh transaksi pada browser ini. Pastikan backup terbaru sudah disimpan. Lanjutkan?'
+    :'Backup format lama hanya berisi transaksi dan akan mengganti seluruh transaksi pada browser ini. Menu tidak diubah. Lanjutkan?';
+   if(!confirm(message)){input.value='';return}
+   localStorage.setItem(KEY,JSON.stringify(sales));
+   if(isFullBackup){
+    PRODUCTS=products;
+    persistProducts();
+    const maxOrder=Math.max(0,...sales.map(s=>Number(String(s.orderNo||'').match(/^INT-(\d+)$/)?.[1]||0)));
+    localStorage.setItem(ORDER_COUNTER_KEY,String(Math.max(Number(data.orderCounter)||0,maxOrder)));
+   }
+   renderTabs();renderSizeTabs();renderProducts();renderHistory();renderStats();
+   alert(isFullBackup?'Restore lengkap berhasil: menu, harga, dan transaksi dipulihkan.':'Restore transaksi berhasil. Backup ini tidak memuat menu.');
+   input.value='';
+  }catch(e){
+   alert('Gagal restore: '+e.message);
+   input.value='';
+  }
  };
  reader.readAsText(file);
 }
