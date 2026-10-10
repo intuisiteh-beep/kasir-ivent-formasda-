@@ -64,7 +64,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 <section id="historySection" class="wrap section no-print"><div class="card"><h2>Riwayat Transaksi</h2><div class="pad">
 <div id="stats" class="stats"></div>
 <div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyPayment" onchange="renderHistory()"><option value="">Semua Pembayaran</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"></div>
-<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Pembeli</th><th>Pembayaran</th><th>Item</th><th>Total</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>No. Pesanan</th><th>Waktu</th><th>Pembeli</th><th>Pembayaran</th><th>Item</th><th>Total</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
 </div></div></section>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><div id="modalContent"></div><div class="no-print" style="display:flex;gap:8px;margin-top:14px"><button class="btn" onclick="window.print()">Cetak</button><button class="btn2" style="background:#edf3ef;color:#17342a" onclick="closeModal()">Tutup</button></div></div></div>
@@ -232,13 +232,21 @@ function setPayment(v,el){payment=v;document.querySelectorAll('.paybox').forEach
 function saveSale(){
  if(!cart.length)return alert('Keranjang masih kosong.');
  const t=total(),cash=Number(document.getElementById('cash').value||0);if(payment==='Cash'&&cash<t)return alert('Uang diterima masih kurang.');
- const sale={id:Date.now(),time:new Date().toISOString(),buyer:(document.getElementById('buyer').value||'Umum').trim(),payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
- const sales=load();sales.push(sale);save(sales);showReceipt(sale);clearCart();document.getElementById('buyer').value='';renderHistory();renderStats();
+ const sales=load();
+ const nextNo=sales.reduce((max,x)=>Math.max(max,Number(String(x.orderNo||'').match(/^INT-(\\d+)$/)?.[1]||0),0),sales.length)+1;
+ const sale={id:Date.now(),orderNo:'INT-'+String(nextNo).padStart(3,'0'),time:new Date().toISOString(),buyer:(document.getElementById('buyer').value||'Umum').trim(),payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
+ sales.push(sale);save(sales);showReceipt(sale);clearCart();document.getElementById('buyer').value='';renderHistory();renderStats();
+}
+function getOrderNo(s){
+ if(s&&s.orderNo)return s.orderNo;
+ const sales=load().slice().sort((a,b)=>Number(a.id)-Number(b.id));
+ const index=sales.findIndex(x=>x.id===s.id);
+ return 'INT-'+String(index>=0?index+1:1).padStart(3,'0');
 }
 function showReceipt(s){
  lastReceiptSale=s;
  const dt=new Date(s.time);const items=s.items.map(i=>esc(i.name)+' ['+esc(i.size)+'] x'+i.qty+' '+rupiah(i.price*i.qty)).join('<br>');
- document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR INTUISI SHOP</b><br>intuisi.teh INDONESIA</div><hr>No. Pesanan: '+String(s.id).slice(-6)+'<br>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+items+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div><button class="btn no-print" style="margin-top:12px" onclick="printKitchenTicket()">Cetak Tiket Pesanan</button>';
+ document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR INTUISI SHOP</b><br>intuisi.teh INDONESIA</div><hr>No. Pesanan: '+getOrderNo(s)+'<br>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+items+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div><button class="btn no-print" style="margin-top:12px" onclick="printKitchenTicket()">Cetak Tiket Pesanan</button>';
  document.getElementById('modal').style.display='flex';
 }
 function printKitchenTicket(){
@@ -253,7 +261,7 @@ function showReceiptById(id){const s=load().find(x=>x.id===id);if(s)showReceipt(
 function renderHistory(){
  const d=document.getElementById('historyDate').value,p=document.getElementById('historyPayment').value,q=(document.getElementById('historySearch').value||'').toLowerCase();
  const sales=load().filter(s=>(!d||s.time.slice(0,10)===d)&&(!p||s.payment===p)&&(!q||s.buyer.toLowerCase().includes(q))).sort((a,b)=>b.id-a.id);
- document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn2" style="background:#edf3ef;color:#17342a;border:0" onclick="showReceiptById('+s.id+')">Struk</button></td></tr>').join(''):'<tr><td colspan="6" class="empty">Belum ada transaksi.</td></tr>';
+ document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+esc(getOrderNo(s))+'</td><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn2" style="background:#edf3ef;color:#17342a;border:0" onclick="showReceiptById('+s.id+')">Struk</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>';
 }
 function renderStats(){
  const d=today(),tod=load().filter(s=>s.time.slice(0,10)===d),om=tod.reduce((n,s)=>n+s.total,0),qty=tod.reduce((n,s)=>n+s.items.reduce((m,i)=>m+i.qty,0),0);
