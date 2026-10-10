@@ -63,8 +63,8 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 
 <section id="historySection" class="wrap section no-print"><div class="card"><h2>Riwayat Transaksi</h2><div class="pad">
 <div id="stats" class="stats"></div>
-<div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyPayment" onchange="renderHistory()"><option value="">Semua Pembayaran</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"></div>
-<div class="tablewrap"><table><thead><tr><th>No. Pesanan</th><th>Waktu</th><th>Pembeli</th><th>Pembayaran</th><th>Item</th><th>Total</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
+<div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyPayment" onchange="renderHistory()"><option value="">Semua Pembayaran</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"><button class="danger" onclick="deleteSalesByDate()">Hapus Semua pada Tanggal Ini</button></div>
+<div class="tablewrap"><table><thead><tr><th>No. Pesanan</th><th>Waktu</th><th>Pembeli</th><th>Pembayaran</th><th>Item</th><th>Total</th><th>Aksi</th></tr></thead><tbody id="historyBody"></tbody></table></div>
 </div></div></section>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><div id="modalContent"></div><div class="no-print" style="display:flex;gap:8px;margin-top:14px"><button class="btn" onclick="window.print()">Cetak</button><button class="btn2" style="background:#edf3ef;color:#17342a" onclick="closeModal()">Tutup</button></div></div></div>
@@ -135,6 +135,7 @@ const DEFAULT_PRODUCTS=[
 ['Lemonade Mojito','M',12000,'Mocktail'],['Blue Ocean','M',12000,'Mocktail']
 ].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3]}));
 const PRODUCT_KEY='kasir_intuisi_shop_products_v1';
+const ORDER_COUNTER_KEY='kasir_intuisi_shop_order_counter_v1';
 function loadProducts(){
  try{const saved=JSON.parse(localStorage.getItem(PRODUCT_KEY)||'null');if(Array.isArray(saved)&&saved.length)return saved;}catch(e){}
  return DEFAULT_PRODUCTS.map(p=>({...p}));
@@ -233,7 +234,10 @@ function saveSale(){
  if(!cart.length)return alert('Keranjang masih kosong.');
  const t=total(),cash=Number(document.getElementById('cash').value||0);if(payment==='Cash'&&cash<t)return alert('Uang diterima masih kurang.');
  const sales=load();
- const nextNo=sales.reduce((max,x)=>Math.max(max,Number(String(x.orderNo||'').match(/^INT-(\\d+)$/)?.[1]||0),0),sales.length)+1;
+ const maxExisting=sales.reduce((max,x)=>Math.max(max,Number(String(x.orderNo||'').match(/^INT-(\\d+)$/)?.[1]||0)),0);
+ const storedCounter=Number(localStorage.getItem(ORDER_COUNTER_KEY)||0);
+ const nextNo=Math.max(sales.length,maxExisting,storedCounter)+1;
+ localStorage.setItem(ORDER_COUNTER_KEY,String(nextNo));
  const sale={id:Date.now(),orderNo:'INT-'+String(nextNo).padStart(3,'0'),time:new Date().toISOString(),buyer:(document.getElementById('buyer').value||'Umum').trim(),payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
  sales.push(sale);save(sales);showReceipt(sale);clearCart();document.getElementById('buyer').value='';renderHistory();renderStats();
 }
@@ -261,7 +265,28 @@ function showReceiptById(id){const s=load().find(x=>x.id===id);if(s)showReceipt(
 function renderHistory(){
  const d=document.getElementById('historyDate').value,p=document.getElementById('historyPayment').value,q=(document.getElementById('historySearch').value||'').toLowerCase();
  const sales=load().filter(s=>(!d||s.time.slice(0,10)===d)&&(!p||s.payment===p)&&(!q||s.buyer.toLowerCase().includes(q))).sort((a,b)=>b.id-a.id);
- document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+esc(getOrderNo(s))+'</td><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn2" style="background:#edf3ef;color:#17342a;border:0" onclick="showReceiptById('+s.id+')">Struk</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>';
+ document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+esc(getOrderNo(s))+'</td><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><div style="display:flex;gap:5px"><button class="btn2" style="background:#edf3ef;color:#17342a;border:0" onclick="showReceiptById('+s.id+')">Struk</button><button class="danger" style="padding:7px 9px" onclick="deleteSale('+s.id+')">Hapus</button></div></td></tr>').join(''):'<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>';
+}
+function deleteSale(id){
+ const sales=load(),sale=sales.find(s=>s.id===id);
+ if(!sale)return;
+ if(!confirm('Hapus transaksi '+getOrderNo(sale)+' milik '+sale.buyer+' senilai '+rupiah(sale.total)+'? Data ini tidak dapat dipulihkan kecuali dari backup.'))return;
+ save(sales.filter(s=>s.id!==id));
+ if(lastReceiptSale&&lastReceiptSale.id===id){lastReceiptSale=null;closeModal();}
+ renderHistory();renderStats();
+}
+function deleteSalesByDate(){
+ const date=document.getElementById('historyDate').value;
+ if(!date)return alert('Pilih tanggal yang ingin dihapus terlebih dahulu.');
+ const sales=load(),matching=sales.filter(s=>s.time&&s.time.slice(0,10)===date);
+ if(!matching.length)return alert('Tidak ada transaksi pada tanggal '+date+'.');
+ const totalAmount=matching.reduce((sum,s)=>sum+(Number(s.total)||0),0);
+ if(!confirm('PERINGATAN: Hapus '+matching.length+' transaksi pada tanggal '+date+' dengan total omzet '+rupiah(totalAmount)+'? Data yang dihapus tidak dapat dipulihkan kecuali dari backup.'))return;
+ const ids=new Set(matching.map(s=>s.id));
+ save(sales.filter(s=>!ids.has(s.id)));
+ if(lastReceiptSale&&ids.has(lastReceiptSale.id)){lastReceiptSale=null;closeModal();}
+ renderHistory();renderStats();
+ alert(matching.length+' transaksi pada tanggal '+date+' berhasil dihapus.');
 }
 function renderStats(){
  const d=today(),tod=load().filter(s=>s.time.slice(0,10)===d),om=tod.reduce((n,s)=>n+s.total,0),qty=tod.reduce((n,s)=>n+s.items.reduce((m,i)=>m+i.qty,0),0);
