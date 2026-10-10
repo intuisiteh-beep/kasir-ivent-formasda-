@@ -25,7 +25,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 @media(max-width:620px){.head{align-items:flex-start;flex-direction:column}.brand img{width:165px;height:64px}.search{grid-template-columns:1fr}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:1fr 1fr}.pay{grid-template-columns:1fr 1fr}.size-pill{min-width:54px}.series-label{font-size:14px}}
 @media print{header,.no-print{display:none!important}.modal{position:static;background:#fff;padding:0}.modalbox{box-shadow:none;border:0}.receipt{font-size:11px}}
 </style>
-</head>
+<style>#cloudLogin{position:fixed;inset:0;background:rgba(3,35,23,.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}#cloudLogin .loginbox{background:#fff;border-radius:16px;padding:24px;width:min(420px,100%);box-shadow:0 18px 60px #0005}#cloudLogin h2{margin-top:0;color:#06492e}#cloudLogin label{display:block;margin:12px 0 5px;font-weight:700}#cloudLogin button{margin-top:14px;width:100%}</style></head>
 <body>
 <header>
 <div class="wrap head">
@@ -33,7 +33,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 <img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="intuisi.teh Indonesia">
 <div><h1>Kasir Intuisi Shop</h1><div class="sub">Menu • Penjualan • Pembayaran</div></div>
 </div>
-<div class="actions"><button class="btn2" onclick="showMenuManager()">Kelola Menu</button><button class="btn2" onclick="scrollHistory()">Riwayat</button><button class="btn2" onclick="showReport()">Laporan</button><button class="btn2" onclick="backup()">Backup</button><button class="btn2" onclick="document.getElementById('restoreFile').click()">Restore</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)"> </div>
+<div class="actions"><span id="cloudStatus">Memeriksa database...</span><button class="btn2" onclick="cloudLogout()">Keluar</button><button class="btn2" onclick="showMenuManager()">Kelola Menu</button><button class="btn2" onclick="scrollHistory()">Riwayat</button><button class="btn2" onclick="showReport()">Laporan</button><button class="btn2" onclick="backup()">Backup</button><button class="btn2" onclick="document.getElementById('restoreFile').click()">Restore</button><input id="restoreFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreBackup(this)"> </div>
 </div>
 </header>
 
@@ -69,7 +69,22 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--g
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><div id="modalContent"></div><div class="no-print" style="display:flex;gap:8px;margin-top:14px"><button class="btn" onclick="window.print()">Cetak</button><button class="btn2" style="background:#edf3ef;color:#17342a" onclick="closeModal()">Tutup</button></div></div></div>
 
+<div id="cloudLogin"><div class="loginbox"><h2>Kasir Intuisi Shop</h2><p>Masuk untuk menyambungkan kasir ke database online.</p><form id="cloudLoginForm"><label for="cloudEmail">Email admin</label><input id="cloudEmail" type="email" required autocomplete="username" placeholder="Email admin Supabase"><label for="cloudPassword">Kata sandi</label><input id="cloudPassword" type="password" required autocomplete="current-password" placeholder="Kata sandi admin"><button class="btn" type="submit">Masuk & Sinkronkan</button><p id="cloudLoginMessage" role="status"></p></form></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
+const SUPABASE_URL='https://izihhgbogdllgwihknlv.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_BlGZWCbUziKXXwk3vPIQXQ_Sv3N-Pht';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let cloudReady=false,cloudSyncBusy=false,cloudPollHandle=null;
+function setCloudMessage(message){const el=document.getElementById('cloudLoginMessage');if(el)el.textContent=message;}
+async function cloudLogin(event){event.preventDefault();const email=document.getElementById('cloudEmail').value.trim(),password=document.getElementById('cloudPassword').value;setCloudMessage('Memeriksa akun...');const {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error){setCloudMessage('Login gagal: '+error.message);return;}await cloudBoot(true);}
+async function cloudLogout(){await supabaseClient.auth.signOut();cloudReady=false;if(cloudPollHandle)clearInterval(cloudPollHandle);document.getElementById('cloudLogin').style.display='flex';}
+async function cloudPull(){if(!cloudReady||cloudSyncBusy)return;cloudSyncBusy=true;try{const [pr,sr]=await Promise.all([supabaseClient.from('products').select('*'),supabaseClient.from('sales').select('*')]);if(pr.error)throw pr.error;if(sr.error)throw sr.error;const products=(pr.data||[]).map(p=>({id:Number(p.id),name:p.name,series:p.series,size:p.size,price:Number(p.price)}));const sales=(sr.data||[]).map(s=>({id:Number(s.id),orderNo:s.order_no,time:s.time,buyer:s.buyer,payment:s.payment,total:Number(s.total),cash:s.cash===null?null:Number(s.cash),change:s.change===null?null:Number(s.change),items:Array.isArray(s.items)?s.items:[]}));localStorage.setItem(KEY,JSON.stringify(sales));if(products.length){PRODUCTS=products;localStorage.setItem(PRODUCT_KEY,JSON.stringify(products));}const maxOrder=Math.max(0,...sales.map(s=>Number(String(s.orderNo||'').match(/^INT-(\d+)$/)?.[1]||0)));localStorage.setItem(ORDER_COUNTER_KEY,String(Math.max(Number(localStorage.getItem(ORDER_COUNTER_KEY)||0),maxOrder)));renderTabs();renderSizeTabs();renderProducts();renderHistory();renderStats();}catch(e){console.error(e);setCloudMessage('Sinkronisasi gagal: '+e.message);}finally{cloudSyncBusy=false;}}
+async function cloudPushProducts(){if(!cloudReady)return;const rows=PRODUCTS.map(p=>({id:Number(p.id),name:p.name,series:p.series,size:p.size,price:Number(p.price),updated_at:new Date().toISOString()}));if(!rows.length)return;const {error}=await supabaseClient.from('products').upsert(rows,{onConflict:'id'});if(error)alert('Gagal menyimpan menu online: '+error.message);}
+async function cloudPushSales(sales){if(!cloudReady)return;const rows=sales.map(s=>({id:Number(s.id),order_no:s.orderNo||getOrderNo(s),time:s.time,buyer:s.buyer||'Umum',payment:s.payment,total:Number(s.total),cash:s.cash??null,change:s.change??null,items:s.items||[]}));if(!rows.length)return;const {error}=await supabaseClient.from('sales').upsert(rows,{onConflict:'id'});if(error)alert('Gagal menyimpan transaksi online: '+error.message);}
+async function cloudBoot(){const {data:{session}}=await supabaseClient.auth.getSession();if(!session){document.getElementById('cloudLogin').style.display='flex';return;}try{setCloudMessage('Menghubungkan database...');const [pr,sr]=await Promise.all([supabaseClient.from('products').select('*'),supabaseClient.from('sales').select('*')]);if(pr.error)throw pr.error;if(sr.error)throw sr.error;const localProducts=PRODUCTS.slice(),localSales=load();if(!(pr.data||[]).length&&!(sr.data||[]).length){const migrate=confirm('Database online masih kosong. Pindahkan menu dan transaksi dari browser ini ke Supabase? Pastikan backup lengkap sudah disimpan.');if(migrate){const pRows=localProducts.map(p=>({id:Number(p.id),name:p.name,series:p.series,size:p.size,price:Number(p.price),updated_at:new Date().toISOString()}));if(pRows.length){const {error}=await supabaseClient.from('products').upsert(pRows,{onConflict:'id'});if(error)throw error;}const sRows=localSales.map(s=>({id:Number(s.id),order_no:s.orderNo||getOrderNo(s),time:s.time,buyer:s.buyer||'Umum',payment:s.payment,total:Number(s.total),cash:s.cash??null,change:s.change??null,items:s.items||[]}));if(sRows.length){const {error}=await supabaseClient.from('sales').upsert(sRows,{onConflict:'id'});if(error)throw error;}}}cloudReady=true;document.getElementById('cloudLogin').style.display='none';await cloudPull();if(cloudPollHandle)clearInterval(cloudPollHandle);cloudPollHandle=setInterval(cloudPull,15000);const status=document.getElementById('cloudStatus');if(status)status.textContent='Database online tersambung';}catch(e){cloudReady=false;setCloudMessage('Gagal terhubung: '+e.message);document.getElementById('cloudLogin').style.display='flex';}}
+
 const KEY='kasir_intuisi_shop_v1';
 const DEFAULT_PRODUCTS=[
 ['Intuisi Tea','STD',4000,'Tea Series'],
@@ -141,7 +156,7 @@ function loadProducts(){
  return DEFAULT_PRODUCTS.map(p=>({...p}));
 }
 let PRODUCTS=loadProducts();
-function persistProducts(){localStorage.setItem(PRODUCT_KEY,JSON.stringify(PRODUCTS));}
+function persistProducts(){localStorage.setItem(PRODUCT_KEY,JSON.stringify(PRODUCTS));if(cloudReady)cloudPushProducts();}
 let editingProductId=null;
 let lastReceiptSale=null;
 
@@ -157,7 +172,7 @@ let cart=[],payment='Cash',activeSeries='Semua',activeSize='Semua';
 const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','');
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}};
-const save=s=>localStorage.setItem(KEY,JSON.stringify(s));
+const save=s=>{localStorage.setItem(KEY,JSON.stringify(s));if(cloudReady)cloudPushSales(s);};
 function today(){return new Date().toISOString().slice(0,10)}
 function init(){
  const series=[...new Set(PRODUCTS.map(p=>p.series))];
@@ -403,7 +418,9 @@ function deleteProduct(id){
 }
 
 function scrollHistory(){document.getElementById('historySection').scrollIntoView({behavior:'smooth'})}
+document.getElementById('cloudLoginForm').addEventListener('submit',cloudLogin);
 init();
+cloudBoot();
 </script>
 </body>
 </html>
