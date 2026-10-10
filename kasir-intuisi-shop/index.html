@@ -250,14 +250,14 @@ function getOrderNo(s){
 function showReceipt(s){
  lastReceiptSale=s;
  const dt=new Date(s.time);const items=s.items.map(i=>esc(i.name)+' ['+esc(i.size)+'] x'+i.qty+' '+rupiah(i.price*i.qty)).join('<br>');
- document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR INTUISI SHOP</b><br>intuisi.teh INDONESIA</div><hr>No. Pesanan: '+getOrderNo(s)+'<br>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+items+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div><button class="btn no-print" style="margin-top:12px" onclick="printKitchenTicket()">Cetak Tiket Pesanan</button>';
+ document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR INTUISI SHOP</b><br>intuisi.teh INDONESIA<br>Graha Suko Indah No. 1A, Suko Legok,<br>Sukodono, Sidoarjo<br>WA: 0857 4826 5687</div><hr>No. Pesanan: '+getOrderNo(s)+'<br>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+items+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih<br>Silakan berkunjung kembali</div></div><button class="btn no-print" style="margin-top:12px" onclick="printKitchenTicket()">Cetak Tiket Pesanan</button>';
  document.getElementById('modal').style.display='flex';
 }
 function printKitchenTicket(){
  if(!lastReceiptSale)return;
  const s=lastReceiptSale,dt=new Date(s.time);
  const lines=s.items.map(i=>'<div style="margin:8px 0;padding-bottom:7px;border-bottom:1px dashed #777"><b>'+esc(i.name)+'</b><br>Size: '+esc(i.size)+' &nbsp; | &nbsp; Qty: <b>'+i.qty+'</b>'+(i.note?'<br>Catatan: '+esc(i.note):'')+'</div>').join('');
- document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center;font-size:16px"><b>TIKET PESANAN</b><br><b>INTUISI TEH</b></div><hr><b>No. Pesanan: '+String(s.id).slice(-6)+'</b><br>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<hr>'+lines+'<hr><div style="text-align:center">Silakan diproses</div></div>';
+ document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center;font-size:15px"><b>TIKET PESANAN</b><br><b>INTUISI TEH</b><br>Graha Suko Indah No. 1A, Suko Legok,<br>Sukodono, Sidoarjo<br>WA: 0857 4826 5687</div><hr><b>No. Pesanan: '+getOrderNo(s)+'</b><br>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<hr>'+lines+'<hr><div style="text-align:center">Silakan diproses</div></div>';
  window.print();
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
