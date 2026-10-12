@@ -15,6 +15,14 @@
 <section id="loginPanel" class="panel"><h2>Login Admin</h2><p class="muted">Gunakan akun email dan password Supabase yang sama dengan aplikasi kasir.</p><form id="loginForm" class="grid"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="field full"><button type="submit">Login</button></div></form><div id="loginStatus" class="status hidden"></div></section>
 <section id="appPanel" class="hidden">
 <div class="panel"><div class="topline"><div><h2 style="margin:0">Data Menu</h2><p class="muted">Perubahan disimpan ke tabel menu khusus, bukan tabel transaksi kasir.</p></div><div class="row"><button id="newBtn">+ Tambah Menu</button><button id="logoutBtn" class="secondary">Keluar</button></div></div><div id="appStatus" class="status hidden"></div></div>
+<section id="categoryPanel" class="panel">
+<div class="topline"><div><h2 style="margin:0">Kelola Kategori / Series</h2><p class="muted">Kategori mengikuti data produk. Ganti nama untuk semua produk dalam kategori, atau pindahkan produk sebelum menghapus kategori.</p></div><button id="refreshCategoriesBtn" class="secondary" type="button">Muat Ulang</button></div>
+<div class="grid" style="margin-top:14px">
+<div class="field"><label for="newCategoryName">Tambah kategori baru</label><input id="newCategoryName" maxlength="80" placeholder="Contoh: Signature Coffee"><button id="addCategoryBtn" type="button">Tambah Kategori</button></div>
+<div class="field"><label for="categorySelect">Kategori yang sudah ada</label><select id="categorySelect"><option value="">Memuat kategori...</option></select><label for="renameCategoryInput">Nama baru</label><input id="renameCategoryInput" maxlength="80" placeholder="Nama kategori baru"><button id="renameCategoryBtn" type="button">Ubah Nama Kategori</button></div>
+<div class="field full"><label for="moveCategoryTarget">Pindahkan produk dari kategori terpilih ke...</label><select id="moveCategoryTarget"><option value="">Pilih kategori tujuan</option></select><button id="deleteCategoryBtn" type="button" class="danger">Hapus Kategori Terpilih</button><p class="muted">Menghapus kategori akan memindahkan semua produknya ke kategori tujuan, bukan menghapus produknya. Pilih kategori tujuan terlebih dahulu.</p></div>
+</div><div id="categoryStatus" class="status hidden"></div><div id="categoryList" class="muted"></div>
+</section>
 <section id="editor" class="panel hidden"><div class="topline"><h2 id="editorTitle">Tambah Menu</h2><button id="cancelBtn" class="secondary" type="button">Tutup</button></div>
 <form id="productForm" class="grid">
 <input id="productId" type="hidden">
@@ -43,7 +51,7 @@ function pricesText(p){const x=p.prices||{};return ['STD','S','M','L','Yakult','
 function render(){const host=$('productList');if(!products.length){host.innerHTML='<div class="panel">Belum ada data menu di tabel admin. Tambahkan menu setelah pengaturan database selesai.</div>';return}
 host.innerHTML=products.map(p=>'<article class="product"><img src="'+esc(p.image_url||'')+'" alt="'+esc(p.name)+'" onerror="this.style.display=\'none\'"><div class="body"><h3>'+esc(p.name)+'</h3><p>'+esc(p.series||'Tanpa kategori')+' · '+(p.active?'Aktif':'Nonaktif')+'</p><p class="price">'+esc(pricesText(p))+'</p><div class="row"><button class="secondary editBtn" data-id="'+esc(p.id)+'">Edit</button><button class="danger deleteCard" data-id="'+esc(p.id)+'">Hapus</button></div></div></article>').join('');
 host.querySelectorAll('.editBtn').forEach(b=>b.onclick=()=>editProduct(b.dataset.id));host.querySelectorAll('.deleteCard').forEach(b=>b.onclick=()=>removeProduct(b.dataset.id))}
-async function loadProducts(){status('appStatus','Memuat menu...');const {data,error}=await db.from('public_menu_products').select('*').order('series').order('name');if(error){status('appStatus','Belum dapat memuat data. Pastikan SQL pengaturan database sudah dijalankan. Detail: '+error.message);return}products=data||[];status('appStatus','Menu tersinkron dari database. Jumlah: '+products.length);render()}
+async function loadProducts(){status('appStatus','Memuat menu...');const {data,error}=await db.from('public_menu_products').select('*').order('series').order('name');if(error){status('appStatus','Belum dapat memuat data. Pastikan SQL pengaturan database sudah dijalankan. Detail: '+error.message);return}products=data||[];status('appStatus','Menu tersinkron dari database. Jumlah: '+products.length);render();renderCategories()}
 function resetForm(){ $('productForm').reset();$('productId').value='';editingImage='';$('editorTitle').textContent='Tambah Menu';$('deleteBtn').classList.add('hidden');$('preview').classList.add('hidden');if(previewObjectUrl)URL.revokeObjectURL(previewObjectUrl);previewObjectUrl='';}
 function editProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;resetForm();$('productId').value=p.id;$('name').value=p.name||'';$('series').value=p.series||'';$('priceSTD').value=p.prices?.STD??'';$('priceS').value=p.prices?.S??'';$('priceM').value=p.prices?.M??'';$('priceL').value=p.prices?.L??'';$('priceYakult').value=p.prices?.Yakult??'';$('priceYoghurt').value=p.prices?.['Yoghurt Breeze']??'';$('imageUrl').value=p.image_url||'';$('active').value=String(p.active!==false);editingImage=p.image_url||'';$('editorTitle').textContent='Edit Menu';$('deleteBtn').classList.remove('hidden');if(editingImage){$('preview').src=editingImage;$('preview').classList.remove('hidden')}$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})}
 async function uploadImage(file){if(!file)return editingImage;if(file.size>5*1024*1024)throw new Error('Ukuran foto maksimal 5 MB.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Format foto harus JPG, PNG, atau WebP.');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';const path=Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;const {error}=await db.storage.from('menu-images').upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from('menu-images').getPublicUrl(path);return data.publicUrl}
@@ -54,6 +62,49 @@ $('newBtn').onclick=()=>{resetForm();$('editor').classList.remove('hidden');$('e
 $('cancelBtn').onclick=()=>{$('editor').classList.add('hidden');resetForm()};
 $('imageFile').onchange=()=>{const f=$('imageFile').files[0];if(!f)return;if(previewObjectUrl)URL.revokeObjectURL(previewObjectUrl);previewObjectUrl=URL.createObjectURL(f);$('preview').src=previewObjectUrl;$('preview').classList.remove('hidden')};
 $('productForm').addEventListener('submit',async e=>{e.preventDefault();const prices={};[['STD','priceSTD'],['S','priceS'],['M','priceM'],['L','priceL'],['Yakult','priceYakult'],['Yoghurt Breeze','priceYoghurt']].forEach(([k,id])=>{if($(id).value!==''&&Number($(id).value)>0)prices[k]=Number($(id).value)});if(!Object.keys(prices).length){status('appStatus','Isi setidaknya satu harga ukuran.');return}const btn=$('saveBtn');btn.disabled=true;try{status('appStatus','Menyimpan menu...');let imageUrl=$('imageUrl').value.trim()||editingImage;const file=$('imageFile').files[0];if(file)imageUrl=await uploadImage(file);const row={name:$('name').value.trim(),series:$('series').value,prices,image_url:imageUrl||null,active:$('active').value==='true',updated_at:new Date().toISOString()};const id=$('productId').value;if(id)row.id=id;const {error}=await db.from('public_menu_products').upsert(row).select();if(error)throw error;status('appStatus','Menu berhasil disimpan ke database.');$('editor').classList.add('hidden');resetForm();await loadProducts()}catch(err){status('appStatus','Gagal menyimpan: '+err.message)}finally{btn.disabled=false}});
+
+function categoryNames(){return [...new Set(products.map(p=>(p.series||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'))}
+function renderCategories(){
+ const names=categoryNames(), sel=$('categorySelect'), target=$('moveCategoryTarget');
+ const previous=sel.value, prevTarget=target.value;
+ sel.innerHTML='<option value="">Pilih kategori</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+' ('+products.filter(p=>p.series===n).length+' menu)</option>').join('');
+ target.innerHTML='<option value="">Pilih kategori tujuan</option>'+names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+ if(names.includes(previous))sel.value=previous;
+ if(names.includes(prevTarget))target.value=prevTarget;
+ $('categoryList').textContent=names.length?'Kategori aktif: '+names.map(n=>n+' ('+products.filter(p=>p.series===n).length+')').join(' • '):'Belum ada kategori.';
+}
+async function categoryUpdate(updates, successMessage){
+ status('categoryStatus','Menyimpan perubahan kategori...');
+ for(const p of updates){const {error}=await db.from('public_menu_products').update({series:p.series,updated_at:new Date().toISOString()}).eq('id',p.id);if(error){status('categoryStatus','Perubahan berhenti pada '+p.name+': '+error.message+' . Muat ulang dan periksa kategori.');await loadProducts();return false}}
+ status('categoryStatus',successMessage);await loadProducts();return true;
+}
+$('refreshCategoriesBtn').onclick=loadProducts;
+$('addCategoryBtn').onclick=()=>{
+ const name=$('newCategoryName').value.trim();
+ if(!name){status('categoryStatus','Masukkan nama kategori terlebih dahulu.');return}
+ if(categoryNames().some(n=>n.toLowerCase()===name.toLowerCase())){status('categoryStatus','Kategori tersebut sudah ada.');return}
+ $('series').value=name;$('name').focus();status('categoryStatus','Nama kategori baru disiapkan. Tambahkan nama menu dan harga pada formulir, lalu tekan Simpan Menu untuk membuat produk pertama di kategori ini.');
+ $('editor').classList.remove('hidden');$('editorTitle').textContent='Tambah Menu untuk '+name;$('editor').scrollIntoView({behavior:'smooth'});
+};
+$('renameCategoryBtn').onclick=async()=>{
+ const old=$('categorySelect').value, name=$('renameCategoryInput').value.trim();
+ if(!old||!name){status('categoryStatus','Pilih kategori dan isi nama baru.');return}
+ if(categoryNames().some(n=>n.toLowerCase()===name.toLowerCase()&&n!==old)){status('categoryStatus','Kategori dengan nama itu sudah ada.');return}
+ const rows=products.filter(p=>p.series===old).map(p=>({...p,series:name}));
+ if(!rows.length){status('categoryStatus','Kategori tidak ditemukan.');return}
+ if(!confirm('Ubah nama kategori "'+old+'" menjadi "'+name+'" untuk '+rows.length+' menu?'))return;
+ await categoryUpdate(rows,'Nama kategori berhasil diubah.');
+};
+$('deleteCategoryBtn').onclick=async()=>{
+ const old=$('categorySelect').value,target=$('moveCategoryTarget').value;
+ if(!old){status('categoryStatus','Pilih kategori yang akan dihapus.');return}
+ if(!target||target===old){status('categoryStatus','Pilih kategori tujuan yang berbeda.');return}
+ const rows=products.filter(p=>p.series===old).map(p=>({...p,series:target}));
+ if(!rows.length){status('categoryStatus','Kategori tidak ditemukan atau sudah kosong.');return}
+ if(!confirm('Hapus kategori "'+old+'" dengan memindahkan '+rows.length+' menu ke "'+target+'"? Produk dan harga tidak akan dihapus.'))return;
+ await categoryUpdate(rows,'Kategori "'+old+'" dihapus; semua produknya dipindahkan ke "'+target+'".');
+};
+
 async function removeProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p||!confirm('Hapus menu '+p.name+'? Penghapusan tidak bisa dibatalkan.'))return;const {error}=await db.from('public_menu_products').delete().eq('id',id);if(error){status('appStatus','Gagal menghapus: '+error.message);return}status('appStatus','Menu dihapus.');await loadProducts()}
 $('deleteBtn').onclick=()=>removeProduct($('productId').value);
 boot();
