@@ -312,6 +312,13 @@ a{text-decoration:none;color:inherit}
   .product-card{flex-basis:82%}
   .thumb{height:125px}
 }
+
+/* Product photos */
+.product-photo-wrap{height:150px;position:relative;overflow:hidden;background:#f0f7f2;display:flex;align-items:center;justify-content:center}
+.product-photo{width:100%;height:100%;object-fit:contain;display:block;padding:5px;transition:transform .25s ease}
+.product-card:hover .product-photo{transform:scale(1.035)}
+.product-photo-wrap .cup{display:none!important}
+
 </style>
 </head>
 <body>
@@ -1564,6 +1571,120 @@ a{text-decoration:none;color:inherit}
   renderSizeTabs();
   applyFilters();
 })();
+
+/* Replace illustrated cups with product photos hosted beside index.html */
+(function(){
+  var base='./';
+  var files={
+    'intuisi tea':'jasmine-tea-product-mockup.webp',
+    'green tea':'refreshing-iced-green-tea-advertisement.webp',
+    'pandan tea':'pandan-tea-freshness-campaign.webp',
+    'vanilla tea':'premium-vanilla-iced-tea-advertisement.webp',
+    'lychee tea':'lychee-tea-branding-delight.webp',
+    'lemon tea':'iced-lemon-tea-branding-scene.webp',
+    'peach tea':'refreshing-peach-tea-product-showcase.webp',
+    'apple tea':'refreshing-apple-tea-advertisement.webp',
+    'mango tea':'refreshing-mango-tea-advertisement.webp',
+    'strawberry tea':'strawberry-tea-cafe-advertisement.webp',
+    'passion tea':'passion-tea-tropical-refreshment.webp',
+    'grape tea':'grape-tea-bliss-advertisement.webp',
+    'melon tea':'refreshing-melon-tea-delight.webp',
+    'milk tea':'photorealistic-iced-milk-tea-advertisement.webp',
+    'thai tea':'vibrant-thai-tea-brand-advertisement.webp',
+    'thai green tea':'thai-green-tea-refreshment-ad.webp',
+    'milo tea':'milo-tea-iced-chocolate-cafe-promo.webp',
+    'black oreo':'black-oreo-milk-drink-advertisement.webp',
+    'choco ovaltine':'choco-ovaltine-iced-indulgence.webp',
+    'red velvet':'red-velvet-iced-drink-advertisement.webp',
+    'taro':'glossy-taro-milk-tea-advertisement.webp',
+    'dark choco':'dark-choco-iced-chocolate-poster.webp',
+    'choco milo':'choco-milo-cafe-advertisement.webp',
+    'choco creamy':'choco-creamy-indulgence-by-intuisi-teh.webp',
+    'choco hazelnut':'choco-hazelnut-iced-drink-ad.webp',
+    'tiramisu':'tiramisu-coffee-cafe-delight.webp',
+    'avocado':'avocado-chocolate-bliss-advertisement.webp',
+    'banana uyu':'banana-chocolate-drink-advertisement.webp',
+    'bubblegum':'bubblegum-splash-drink-advertisement.webp',
+    'matcha':'vibrant-matcha-latte-advertisement.webp',
+    'americano':'iced-americano-cafe-advertisement.webp',
+    'intuisi latte':'cinematic-iced-coffee-latte-advertisement.webp',
+    'coffee latte':'cinematic-iced-coffee-latte-advertisement.webp',
+    'brown sugar':'brown-sugar-latte-commercial-still-life.webp',
+    'salted caramel':'salted-caramel-latte-delight.webp',
+    'caramel macchiato':'caramel-macchiato-cafe-delight.webp',
+    'butterscotch':'butterscotch-latte-caramel-splash.webp',
+    'pandan aren':'pandan-latte-green-cafe-promo.webp',
+    'pandan latte':'pandan-latte-green-cafe-promo.webp',
+    'vanilla latte':'vanilla-latte-indulgence.webp',
+    'cappuccino':'cappuccino-bliss-iced-coffee-delight.webp',
+    'pistachio':'pistachio-latte-indulgence.webp',
+    'almond latte':'almond-latte-splash-advertisement.webp',
+    'lychee squash':'lychee-squash-summer-splash.webp',
+    'lemon squash':'lemon-squash-summer-splash.webp',
+    'peach squash':'peach-squash-summer-splash.webp',
+    'mango squash':'vibrant-mango-squash-advertisement.webp',
+    'strawberry squash':'strawberry-squash-refreshment-poster.webp',
+    'passion squash':'tropical-passion-squash-delight.webp',
+    'grape squash':'grape-squash-splash-advertisement.webp',
+    'melon squash':'vibrant-melon-squash-beverage-poster.webp',
+    'blue ocean':'blue-ocean-tropical-refreshment.webp',
+    'lychee yakult':'lychee-yakult-squash-delight.webp',
+    'mango yakult':'tropical-mango-yakult-squash-advertisement.webp',
+    'melon yakult':'melon-yakult-squash-beverage-poster.webp',
+    'grape yakult':'grape-yakult-squash-drink-poster.webp',
+    'strawberry yakult':'strawberry-yakult-squash-delight.webp',
+    'peach yakult':'peach-yakult-squash-delight.webp',
+    'lemon yakult':'lemon-yakult-squash-refreshment-poster.webp',
+    'lychee yoghurt':'lychee-yogurt-splash-advertisement.webp',
+    'lychee yogurt':'lychee-yogurt-splash-advertisement.webp',
+    'mango yoghurt':'mango-yogurt-tropical-drink-promo.webp',
+    'mango yogurt':'mango-yogurt-tropical-drink-promo.webp',
+    'melon yoghurt':'melon-yogurt-refreshment-advertisement.webp',
+    'melon yogurt':'melon-yogurt-refreshment-advertisement.webp',
+    'grape yoghurt':'grape-yogurt-refreshment-advertisement.webp',
+    'grape yogurt':'grape-yogurt-refreshment-advertisement.webp',
+    'strawberry yoghurt':'strawberry-yogurt-splash-advertisement.webp',
+    'strawberry yogurt':'strawberry-yogurt-splash-advertisement.webp',
+    'peach yoghurt':'peach-yogurt-splash-advertisement.webp',
+    'peach yogurt':'peach-yogurt-splash-advertisement.webp',
+    'lemon yoghurt':'zesty-lemon-yogurt-drink-poster.webp',
+    'lemon yogurt':'zesty-lemon-yogurt-drink-poster.webp'
+  };
+  function choose(card){
+    var title=(card.querySelector('.product-name')||{}).textContent||'';
+    var meta=(card.querySelector('.product-meta')||{}).textContent||'';
+    var sec=card.closest('.menu-section');
+    var series=sec?sec.getAttribute('data-series'):'';
+    var n=title.toLowerCase().replace(/best/g,'').trim();
+    var m=meta.toLowerCase();
+    if(series==='Signature Intuisi Teh'){
+      var v=m.indexOf('yoghurt')>=0?' yoghurt':(m.indexOf('yogurt')>=0?' yogurt':(m.indexOf('yakult')>=0?' yakult':''));
+      var key=n+v;
+      if(files[key]) return files[key];
+    }
+    if(files[n]) return files[n];
+    var keys=Object.keys(files).sort(function(a,b){return b.length-a.length;});
+    for(var i=0;i<keys.length;i++) if(n.indexOf(keys[i])>=0) return files[keys[i]];
+    return null;
+  }
+  document.querySelectorAll('.product-card').forEach(function(card){
+    var file=choose(card);
+    if(!file) return;
+    var cup=card.querySelector('.cup');
+    if(!cup) return;
+    var wrap=document.createElement('div');
+    wrap.className='product-photo-wrap';
+    var img=document.createElement('img');
+    img.className='product-photo';
+    img.loading='lazy';
+    img.alt=(card.querySelector('.product-name')||{}).textContent||'Minuman Intuisi Teh';
+    img.src=base+file;
+    img.onerror=function(){wrap.style.display='none';cup.style.display='flex';};
+    wrap.appendChild(img);
+    cup.parentNode.replaceChild(wrap,cup);
+  });
+})();
+
 </script>
 </body>
 </html>
