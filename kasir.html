@@ -43,7 +43,7 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 6px}.pay{displa
     <img src="https://cdn.phototourl.com/member/2026-09-28-6f3cb77f-83c9-4cc8-8701-f613283bf8d6.jpg" alt="Logo">
     <div><h1>Kasir Ivent Formasda</h1><div class="sub">Kasir Event • Menu & Harga Terbaru</div></div>
   </div>
-  <div class="actions"><button class="btn-light" onclick="scrollToHistory()">Riwayat</button><button class="btn-light" onclick="showReport()">Laporan</button><button class="btn-light" onclick="backup()">Backup</button></div>
+  <div class="actions"><button class="btn" onclick="showMenuManager()">Kelola Menu</button><button class="btn-light" onclick="scrollToHistory()">Riwayat</button><button class="btn-light" onclick="showReport()">Laporan</button><button class="btn-light" onclick="backup()">Backup</button></div>
 </div>
 </header>
 
@@ -79,7 +79,8 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 6px}.pay{displa
 
 <script>
 const KEY='kasir_ivent_formasda_2026_v1';
-const PRODUCTS=[
+const MENU_KEY='kasir_ivent_formasda_menu_v1';
+const DEFAULT_PRODUCTS=[
 ['French Fries','STD',18000,'Food'],
 ['Nugget','STD',23000,'Food'],
 ['Mix Platter','STD',35000,'Food'],
@@ -101,25 +102,63 @@ const PRODUCTS=[
 ['Mango Squash','M',20000,'Mocktail'],
 ['Lychee Squash','M',20000,'Mocktail'],
 ['Combo Big Twins (2 French Fries + Jasmine)','STD',35000,'Paket Combo']
-].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3]}));
+].map((x,i)=>({id:i+1,name:x[0],size:x[1],price:x[2],series:x[3],active:true}));
+let PRODUCTS=loadProducts();
 let cart=[],payment='Cash',activeSeries='Semua';
 const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp').replace(',00','');
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}};
 const save=s=>localStorage.setItem(KEY,JSON.stringify(s));
+function loadProducts(){try{const saved=localStorage.getItem(MENU_KEY);if(saved){const parsed=JSON.parse(saved);if(Array.isArray(parsed))return parsed}}catch(e){}return DEFAULT_PRODUCTS.map(p=>({...p}));}
+function saveProducts(){localStorage.setItem(MENU_KEY,JSON.stringify(PRODUCTS));}
+function refreshSeriesOptions(){const el=document.getElementById('seriesSelect');const series=[...new Set(PRODUCTS.filter(p=>p.active!==false).map(p=>p.series))];el.innerHTML='<option value="Semua">Semua</option>'+series.map(s=>'<option value="'+esc(s)+'">'+esc(s)+'</option>').join('');if(!series.includes(activeSeries))activeSeries='Semua';el.value=activeSeries;}
 function today(){return new Date().toISOString().slice(0,10)}
 function init(){
- const series=[...new Set(PRODUCTS.map(p=>p.series))];
- document.getElementById('seriesSelect').innerHTML='<option>Semua</option>'+series.map(s=>'<option>'+esc(s)+'</option>').join('');
+ refreshSeriesOptions();
  document.getElementById('historyDate').value=today();renderTabs();renderProducts();renderCart();renderHistory();renderStats();
 }
 function setSeries(v){activeSeries=v;renderTabs();renderProducts()}
-function renderTabs(){const all=['Semua',...new Set(PRODUCTS.map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" onclick=\'setSeries('+JSON.stringify(s)+')\'>'+esc(s)+'</button>').join('')}
+function renderTabs(){const all=['Semua',...new Set(PRODUCTS.filter(p=>p.active!==false).map(p=>p.series))];document.getElementById('tabs').innerHTML=all.map(s=>'<button type="button" class="tab '+(activeSeries===s?'active':'')+'" onclick=\'setSeries('+JSON.stringify(s)+')\'>'+esc(s)+'</button>').join('')}
 function renderProducts(){
  const q=(document.getElementById('search').value||'').toLowerCase().trim();
- const arr=PRODUCTS.filter(p=>(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q)));
+ const arr=PRODUCTS.filter(p=>p.active!==false&&(activeSeries==='Semua'||p.series===activeSeries)&&(!q||p.name.toLowerCase().includes(q)));
  document.getElementById('products').innerHTML=arr.length?arr.map(p=>'<div class="product"><div><div class="name">'+esc(p.name)+'</div><div class="meta">'+esc(p.series)+' • '+esc(p.size)+'</div><div class="price">'+rupiah(p.price)+'</div></div><button class="btn" onclick="add('+p.id+')">Tambah</button></div>').join(''):'<div class="empty">Menu tidak ditemukan.</div>';
 }
+
+function showMenuManager(editId){
+ const editing=editId==null?null:PRODUCTS.find(p=>p.id===Number(editId));
+ const form= '<h3 style="margin-top:0">'+(editing?'Edit Menu':'Tambah Menu Baru')+'</h3>'+
+ '<form onsubmit="saveProductForm(event,'+(editing?editing.id:'null')+')">'+
+ '<label>Nama menu</label><input id="menuName" required maxlength="80" value="'+esc(editing?editing.name:'')+'" placeholder="Contoh: Lemon Tea">'+
+ '<label>Kategori / Series</label><input id="menuSeries" required maxlength="50" value="'+esc(editing?editing.series:'')+'" placeholder="Contoh: Tea Series">'+
+ '<label>Ukuran</label><input id="menuSize" required maxlength="20" value="'+esc(editing?editing.size:'STD')+'" placeholder="Contoh: S, M, L atau STD">'+
+ '<label>Harga (angka saja)</label><input id="menuPrice" type="number" min="0" step="500" required value="'+(editing?Number(editing.price):'')+'" placeholder="Contoh: 15000">'+
+ '<label style="display:flex;align-items:center;gap:8px"><input id="menuActive" type="checkbox" style="width:auto" '+(!editing||editing.active!==false?'checked':'')+'> Menu aktif / tampil di kasir</label>'+
+ '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn" type="submit">Simpan Menu</button><button class="btn-light" type="button" style="background:#edf3ef;color:#18342a" onclick="showMenuManager()">Batal / Menu Baru</button></div></form><hr style="border:0;border-top:1px solid #dce7e1;margin:18px 0">'+
+ '<h3>Daftar Menu ('+PRODUCTS.length+')</h3><div class="note">Perubahan tersimpan di browser/perangkat ini. Gunakan perangkat yang sama untuk melihat menu yang sudah diedit.</div>'+
+ '<div class="tablewrap"><table><thead><tr><th>Menu</th><th>Kategori</th><th>Ukuran</th><th>Harga</th><th>Status</th><th>Aksi</th></tr></thead><tbody>'+
+ (PRODUCTS.length?PRODUCTS.slice().sort((a,b)=>a.series.localeCompare(b.series)||a.name.localeCompare(b.name)).map(p=>'<tr><td>'+esc(p.name)+'</td><td>'+esc(p.series)+'</td><td>'+esc(p.size)+'</td><td>'+rupiah(p.price)+'</td><td>'+(p.active===false?'Nonaktif':'Aktif')+'</td><td><button type="button" class="btn" onclick="showMenuManager('+p.id+')">Edit</button> <button type="button" class="btn-light" style="background:#edf3ef;color:#18342a" onclick="toggleProduct('+p.id+')">'+(p.active===false?'Aktifkan':'Nonaktifkan')+'</button></td></tr>').join(''):'<tr><td colspan="6" class="empty">Belum ada menu.</td></tr>')+
+ '</tbody></table></div>';
+ document.getElementById('modalContent').innerHTML=form;
+ document.getElementById('modal').style.display='flex';
+}
+function saveProductForm(event,id){
+ event.preventDefault();
+ const name=document.getElementById('menuName').value.trim();
+ const series=document.getElementById('menuSeries').value.trim();
+ const size=document.getElementById('menuSize').value.trim();
+ const price=Number(document.getElementById('menuPrice').value);
+ if(!name||!series||!size||!Number.isFinite(price)||price<0)return alert('Periksa kembali nama, kategori, ukuran, dan harga menu.');
+ const active=document.getElementById('menuActive').checked;
+ if(id!==null){const p=PRODUCTS.find(x=>x.id===Number(id));if(!p)return alert('Menu tidak ditemukan.');Object.assign(p,{name,series,size,price,active});}
+ else {PRODUCTS.push({id:PRODUCTS.reduce((m,p)=>Math.max(m,Number(p.id)||0),0)+1,name,series,size,price,active});}
+ saveProducts();refreshSeriesOptions();renderTabs();renderProducts();showMenuManager(); 
+}
+function toggleProduct(id){
+ const p=PRODUCTS.find(x=>x.id===Number(id));if(!p)return;
+ p.active=p.active===false;saveProducts();refreshSeriesOptions();renderTabs();renderProducts();showMenuManager();
+}
+
 function add(id){const p=PRODUCTS.find(x=>x.id===id),f=cart.find(x=>x.id===id);if(f)f.qty++;else cart.push({...p,qty:1});renderCart()}
 function qty(id,d){const f=cart.find(x=>x.id===id);if(!f)return;f.qty+=d;if(f.qty<=0)cart=cart.filter(x=>x.id!==id);renderCart()}
 function clearCart(){cart=[];document.getElementById('cash').value='';renderCart()}
