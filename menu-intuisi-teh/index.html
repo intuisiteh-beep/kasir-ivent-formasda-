@@ -1422,6 +1422,7 @@ a{text-decoration:none;color:inherit}
   </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   var ORDER=['Tea Series','Milk Base','Coffee Latte','New Product','Signature Intuisi Teh','Mocktail'];
@@ -1675,5 +1676,53 @@ a{text-decoration:none;color:inherit}
 })();
 
 </script>
+<script>
+(function(){
+  var MENU_DB_URL="https://izihhgbogdllgwihknlv.supabase.co";
+  var MENU_DB_KEY="sb_publishable_BlGZWCbUziKXXwk3vPIQXQ_Sv3N-Pht";
+  var menuDb=window.supabase.createClient(MENU_DB_URL,MENU_DB_KEY);
+  var publicSeriesMap={"Series Tea":"Tea Series","Milk Based":"Milk Base","Coffee Latte":"Coffee Latte","Signature Intuisi Teh":"Signature Intuisi Teh","Mocktail Series":"Mocktail","Makanan":"Makanan","Lainnya":"Lainnya"};
+  function menuEscape(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function menuRp(v){return "Rp "+Number(v||0).toLocaleString("id-ID")}
+  function menuCard(p,size,price){
+    var label=p.name;
+    var best=/^(intuisi tea|lychee tea|lemon tea|peach tea|thai tea|milo tea|matcha|red velvet|taro|black oreo|choco creamy|intuisi latte|brown sugar latte|cappuccino|lemon squash|blue ocean)$/i.test(label);
+    var image=p.image_url||"";
+    if(image && !/^https?:\/\//i.test(image) && image.indexOf("/")!==0) image="./"+image.replace(/^\.\//,"");
+    var cup=image?'<div class="product-photo-wrap"><img class="product-photo" loading="lazy" alt="'+menuEscape(label)+'" src="'+menuEscape(image)+'"></div>':'<div class="cup"><div class="cup-top"></div><div class="cup-logo">intuisi.teh<small>INDONESIA</small></div><div class="cup-content">🍃</div></div>';
+    return '<article class="product-card" data-search="'+menuEscape((label+" "+size+" "+p.series).toLowerCase())+'">'+cup+'<div class="product-name">'+menuEscape(label)+(best?'<span class="best">BEST</span>':"")+'</div><div class="product-meta">Ukuran: '+menuEscape(size)+'</div><div class="product-price">'+menuRp(price)+'</div></article>';
+  }
+  async function loadPublicMenu(){
+    try{
+      var res=await menuDb.from("public_menu_products").select("*").eq("active",true).order("series").order("name");
+      if(res.error) throw res.error;
+      if(!res.data || !res.data.length) return;
+      var buckets={};
+      res.data.forEach(function(p){
+        var target=publicSeriesMap[p.series]||p.series;
+        var sizes=p.prices||{};
+        Object.keys(sizes).forEach(function(size){if(Number(sizes[size])>0){if(!buckets[target])buckets[target]=[];buckets[target].push(menuCard(p,size,sizes[size]));}});
+      });
+      var sections=document.getElementById("sections");
+      Object.keys(buckets).forEach(function(series){
+        var section=Array.prototype.find.call(sections.querySelectorAll(".menu-section"),function(el){return el.getAttribute("data-series")===series;});
+        if(!section){
+          section=document.createElement("section");section.className="menu-section";section.id="sec-"+series.toLowerCase().replace(/[^a-z0-9]+/g,"-");section.setAttribute("data-series",series);
+          section.innerHTML='<div class="section-top"><div class="section-title"><span class="bar"></span><h2>'+menuEscape(series)+'</h2><span class="count">0 item</span></div><button class="see-all" type="button">Lihat Semua ›</button></div><div class="menu-carousel"><button class="arrow left" type="button" aria-label="Sebelumnya">‹</button><div class="track"></div><button class="arrow right" type="button" aria-label="Berikutnya">›</button></div>';
+          sections.appendChild(section);
+          section.querySelector(".see-all").onclick=function(){section.classList.toggle("is-expanded");};
+          var left=section.querySelector(".arrow.left"),right=section.querySelector(".arrow.right"),newTrack=section.querySelector(".track");
+          left.onclick=function(){newTrack.scrollBy({left:-320,behavior:"smooth"});};right.onclick=function(){newTrack.scrollBy({left:320,behavior:"smooth"});};
+        }
+        var track=section.querySelector(".track");track.innerHTML=buckets[series].join("");
+        var count=section.querySelector(".count");if(count)count.textContent=buckets[series].length+" item";
+      });
+      if(typeof renderSeriesTabs==="function"){renderSeriesTabs();renderSizeTabs();applyFilters();}
+    }catch(err){console.warn("Menu online belum dimuat; menggunakan menu bawaan.",err);}
+  }
+  document.addEventListener("DOMContentLoaded",loadPublicMenu);
+})();
+</script>
+
 </body>
 </html>
