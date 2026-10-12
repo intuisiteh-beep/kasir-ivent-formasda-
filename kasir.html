@@ -63,7 +63,8 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 6px}.pay{displa
 <div id="cashBox"><label>Uang Diterima</label><input id="cash" type="number" min="0" placeholder="0" oninput="renderCart()"></div>
 <div id="qrisBox" class="qris"><div class="note">Silakan scan QRIS untuk pembayaran.</div><img src="https://cdn.phototourl.com/member/2026-09-29-0c428922-e3b2-440f-b86f-0b7839b3ef9e.jpg" alt="QRIS"></div>
 <div id="cart" class="cart"></div>
-<div class="totalbox"><div class="totline"><span>Subtotal</span><b id="subtotal">Rp 0</b></div><div id="changeRow" class="totline"><span>Kembalian</span><b id="change">Rp 0</b></div><div class="totline grand"><span>Total</span><b id="total">Rp 0</b></div></div>
+<label>Diskon</label><div style="display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:8px"><input id="discountValue" type="number" min="0" step="any" value="0" placeholder="Masukkan diskon" oninput="renderCart()"><select id="discountType" onchange="renderCart()"><option value="amount">Rupiah (Rp)</option><option value="percent">Persen (%)</option></select></div><div class="note">Diskon berlaku untuk total seluruh pesanan. Diskon persen maksimal 100%.</div>
+<div class="totalbox"><div class="totline"><span>Subtotal</span><b id="subtotal">Rp 0</b></div><div class="totline"><span>Diskon</span><b id="discountAmount">Rp 0</b></div><div id="changeRow" class="totline"><span>Kembalian</span><b id="change">Rp 0</b></div><div class="totline grand"><span>Total</span><b id="total">Rp 0</b></div></div>
 <button class="btn full" onclick="saveSale()">Simpan Transaksi</button><button class="btn-light full" style="background:#edf3ef;color:#18342a" onclick="clearCart()">Kosongkan</button>
 <div class="note">Kontak WhatsApp: <b>0857 2667 7641</b></div>
 </div></section>
@@ -161,22 +162,24 @@ function toggleProduct(id){
 
 function add(id){const p=PRODUCTS.find(x=>x.id===id),f=cart.find(x=>x.id===id);if(f)f.qty++;else cart.push({...p,qty:1});renderCart()}
 function qty(id,d){const f=cart.find(x=>x.id===id);if(!f)return;f.qty+=d;if(f.qty<=0)cart=cart.filter(x=>x.id!==id);renderCart()}
-function clearCart(){cart=[];document.getElementById('cash').value='';renderCart()}
-function total(){return cart.reduce((n,x)=>n+x.price*x.qty,0)}
+function clearCart(){cart=[];document.getElementById('cash').value='';if(document.getElementById('discountValue'))document.getElementById('discountValue').value='0';renderCart()}
+function subtotal(){return cart.reduce((n,x)=>n+x.price*x.qty,0)}
+function discount(){const raw=Math.max(0,Number(document.getElementById('discountValue')?.value||0));const value=document.getElementById('discountType')?.value||'amount';return Math.min(subtotal(),Math.round(value==='percent'?subtotal()*Math.min(raw,100)/100:raw))}
+function total(){return Math.max(0,subtotal()-discount())}
 function renderCart(){
  const el=document.getElementById('cart');el.innerHTML=cart.length?cart.map(x=>'<div class="item"><div class="row"><div><div class="name">'+esc(x.name)+'</div><div class="meta">'+x.size+' • '+rupiah(x.price)+'</div></div><b>'+rupiah(x.price*x.qty)+'</b></div><div class="row"><div class="qty"><button onclick="qty('+x.id+',-1)">−</button><b>'+x.qty+'</b><button onclick="qty('+x.id+',1)">+</button></div><button class="btn-danger" onclick="qty('+x.id+',-'+x.qty+')">Hapus</button></div></div>').join(''):'<div class="empty">Keranjang masih kosong.</div>';
- const t=total(),cash=Number(document.getElementById('cash').value||0);document.getElementById('subtotal').textContent=rupiah(t);document.getElementById('total').textContent=rupiah(t);document.getElementById('change').textContent=rupiah(Math.max(0,cash-t));document.getElementById('changeRow').style.display=payment==='Cash'?'flex':'none';
+ const sub=subtotal(),disc=discount(),t=Math.max(0,sub-disc),cash=Number(document.getElementById('cash').value||0);document.getElementById('subtotal').textContent=rupiah(sub);document.getElementById('discountAmount').textContent='− '+rupiah(disc);document.getElementById('total').textContent=rupiah(t);document.getElementById('change').textContent=rupiah(Math.max(0,cash-t));document.getElementById('changeRow').style.display=payment==='Cash'?'flex':'none';
 }
 function setPayment(v,el){payment=v;document.querySelectorAll('.paybox').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.getElementById('cashBox').style.display=v==='Cash'?'block':'none';document.getElementById('qrisBox').style.display=v==='QRIS'?'block':'none';renderCart()}
 function saveSale(){
  if(!cart.length)return alert('Keranjang masih kosong.');
- const t=total(),cash=Number(document.getElementById('cash').value||0);if(payment==='Cash'&&cash<t)return alert('Uang diterima masih kurang.');
- const sale={id:Date.now(),time:new Date().toISOString(),buyer:(document.getElementById('buyer').value||'Umum').trim(),channel:document.getElementById('channel').value,payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
+ const sub=subtotal(),disc=discount(),t=total(),cash=Number(document.getElementById('cash').value||0);if(payment==='Cash'&&cash<t)return alert('Uang diterima masih kurang.');
+ const sale={id:Date.now(),time:new Date().toISOString(),subtotal:sub,discount:disc,discountType:document.getElementById('discountType').value,discountValue:Number(document.getElementById('discountValue').value||0),buyer:(document.getElementById('buyer').value||'Umum').trim(),channel:document.getElementById('channel').value,payment,total:t,cash:payment==='Cash'?cash:null,change:payment==='Cash'?cash-t:null,items:cart.map(x=>({name:x.name,size:x.size,price:x.price,qty:x.qty}))};
  const sales=load();sales.push(sale);save(sales);showReceipt(sale);clearCart();document.getElementById('buyer').value='';renderHistory();renderStats();
 }
 function showReceipt(s){
  const dt=new Date(s.time);let lines=s.items.map(i=>esc(i.name)+' x'+i.qty+' '+rupiah(i.price*i.qty)).join('<br>');
- document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR IVENT FORMASDA</b><br>Struk Penjualan</div><hr>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Channel: '+esc(s.channel)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+lines+'<hr><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div>';
+ document.getElementById('modalContent').innerHTML='<div class="receipt"><div style="text-align:center"><b>KASIR IVENT FORMASDA</b><br>Struk Penjualan</div><hr>Waktu: '+dt.toLocaleString('id-ID')+'<br>Pembeli: '+esc(s.buyer)+'<br>Channel: '+esc(s.channel)+'<br>Pembayaran: '+esc(s.payment)+'<hr>'+lines+'<hr>Subtotal: '+rupiah(s.subtotal==null?s.total:s.subtotal)+'<br>Diskon: − '+rupiah(s.discount||0)+'<br><b>TOTAL: '+rupiah(s.total)+'</b>'+(s.payment==='Cash'?'<br>Cash: '+rupiah(s.cash)+'<br>Kembalian: '+rupiah(s.change):'')+'<hr><div style="text-align:center">Terima kasih</div></div>';
  document.getElementById('modal').style.display='flex';
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
