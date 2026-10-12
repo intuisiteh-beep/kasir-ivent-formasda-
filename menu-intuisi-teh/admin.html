@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b6542"><title>Admin Menu — Intuisi Teh</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--g:#0b6542;--gd:#073d29;--bg:#f3f7f4;--ink:#20352c;--line:#dbe5df;--red:#a52a22}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px Arial,sans-serif}header{background:linear-gradient(120deg,var(--gd),var(--g));color:#fff;padding:20px}.wrap{max-width:1100px;margin:auto;padding:18px}h1{margin:0;font-size:22px}header p{margin:6px 0 0;color:#e2f2e8;font-size:13px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 5px 18px #1234}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-weight:700;font-size:13px}input,select,textarea{width:100%;padding:11px;border:1px solid #cbd9d0;border-radius:9px;font:inherit;background:#fff}button,.button{border:0;border-radius:9px;padding:11px 14px;background:var(--g);color:white;font-weight:700;cursor:pointer}button.secondary{background:#e9f2ec;color:var(--gd)}button.danger{background:#fff0ee;color:var(--red)}button:disabled{opacity:.5;cursor:wait}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.muted{color:#687970;font-size:13px}.status{padding:10px 12px;background:#edf6ef;border-radius:9px;margin:10px 0;font-size:13px;white-space:pre-wrap}.hidden{display:none!important}.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}.product{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:white}.product img{width:100%;height:150px;object-fit:cover;background:#edf3ee}.product .body{padding:12px}.product h3{margin:0 0 6px;font-size:16px}.product p{margin:5px 0;font-size:13px}.price{font-weight:700;color:var(--g)}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.size-prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}@media(max-width:600px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.size-prices{grid-template-columns:1fr 1fr}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Admin Menu Intuisi Teh Indonesia</h1><p>Kelola nama menu, kategori, ukuran, harga, dan foto produk.</p></div></header>
+<main class="wrap">
+<section id="loginPanel" class="panel"><h2>Login Admin</h2><p class="muted">Gunakan akun email dan password Supabase yang sama dengan aplikasi kasir.</p><form id="loginForm" class="grid"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div><div class="field full"><button type="submit">Login</button></div></form><div id="loginStatus" class="status hidden"></div></section>
+<section id="appPanel" class="hidden">
+<div class="panel"><div class="topline"><div><h2 style="margin:0">Data Menu</h2><p class="muted">Perubahan disimpan ke tabel menu khusus, bukan tabel transaksi kasir.</p></div><div class="row"><button id="newBtn">+ Tambah Menu</button><button id="logoutBtn" class="secondary">Keluar</button></div></div><div id="appStatus" class="status hidden"></div></div>
+<section id="editor" class="panel hidden"><div class="topline"><h2 id="editorTitle">Tambah Menu</h2><button id="cancelBtn" class="secondary" type="button">Tutup</button></div>
+<form id="productForm" class="grid">
+<input id="productId" type="hidden">
+<div class="field"><label for="name">Nama menu *</label><input id="name" required maxlength="100" placeholder="Contoh: Matcha"></div>
+<div class="field"><label for="series">Kategori / series *</label><select id="series" required><option value="">Pilih kategori</option><option>Series Tea</option><option>Milk Based</option><option>Mocktail Series</option><option>Coffee Latte</option><option>Signature Intuisi Teh</option><option>Makanan</option><option>Lainnya</option></select></div>
+<div class="field full"><label>Harga per ukuran (rupiah, kosongkan jika ukuran tidak tersedia)</label><div class="size-prices"><div class="field"><label for="priceS">S</label><input id="priceS" type="number" min="0" step="500" placeholder="15000"></div><div class="field"><label for="priceM">M</label><input id="priceM" type="number" min="0" step="500" placeholder="18000"></div><div class="field"><label for="priceL">L</label><input id="priceL" type="number" min="0" step="500" placeholder="20000"></div></div></div>
+<div class="field full"><label for="imageFile">Foto produk (JPG, PNG, WebP; maks. 5 MB)</label><input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp"><div class="muted">Upload foto memerlukan bucket Supabase Storage bernama <b>menu-images</b>. Jika tidak mengganti foto, foto lama dipertahankan.</div><img id="preview" class="hidden" alt="Pratinjau foto" style="max-width:180px;max-height:160px;object-fit:cover;border-radius:10px"></div>
+<div class="field"><label for="imageUrl">URL foto (opsional)</label><input id="imageUrl" type="url" placeholder="https://..."></div>
+<div class="field"><label for="active">Status menu</label><select id="active"><option value="true">Aktif ditampilkan</option><option value="false">Nonaktif / disembunyikan</option></select></div>
+<div class="field full"><div class="row"><button id="saveBtn" type="submit">Simpan Menu</button><button id="deleteBtn" class="danger hidden" type="button">Hapus Menu</button></div></div>
+</form></section>
+<div id="productList" class="products"></div>
+</section>
+<p class="muted">Halaman admin tidak mengubah website pelanggan sampai sinkronisasi publik diaktifkan pada langkah berikutnya.</p>
+</main>
+<script>
+const SUPABASE_URL='https://izihhgbogdllgwihknlv.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_BlGZWCbUziKXXwk3vPIQXQ_Sv3N-Pht';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const $=id=>document.getElementById(id);
+let products=[],editingImage='',previewObjectUrl='';
+function status(id,msg){$(id).textContent=msg;$(id).classList.remove('hidden')}
+function money(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function pricesText(p){const x=p.prices||{};return ['S','M','L'].filter(k=>Number(x[k])>0).map(k=>k+' '+money(x[k])).join(' • ')||'Belum ada harga'}
+function render(){const host=$('productList');if(!products.length){host.innerHTML='<div class="panel">Belum ada data menu di tabel admin. Tambahkan menu setelah pengaturan database selesai.</div>';return}
+host.innerHTML=products.map(p=>'<article class="product"><img src="'+esc(p.image_url||'')+'" alt="'+esc(p.name)+'" onerror="this.style.display=\'none\'"><div class="body"><h3>'+esc(p.name)+'</h3><p>'+esc(p.series||'Tanpa kategori')+' · '+(p.active?'Aktif':'Nonaktif')+'</p><p class="price">'+esc(pricesText(p))+'</p><div class="row"><button class="secondary editBtn" data-id="'+esc(p.id)+'">Edit</button><button class="danger deleteCard" data-id="'+esc(p.id)+'">Hapus</button></div></div></article>').join('');
+host.querySelectorAll('.editBtn').forEach(b=>b.onclick=()=>editProduct(b.dataset.id));host.querySelectorAll('.deleteCard').forEach(b=>b.onclick=()=>removeProduct(b.dataset.id))}
+async function loadProducts(){status('appStatus','Memuat menu...');const {data,error}=await db.from('public_menu_products').select('*').order('series').order('name');if(error){status('appStatus','Belum dapat memuat data. Pastikan SQL pengaturan database sudah dijalankan. Detail: '+error.message);return}products=data||[];status('appStatus','Menu tersinkron dari database. Jumlah: '+products.length);render()}
+function resetForm(){ $('productForm').reset();$('productId').value='';editingImage='';$('editorTitle').textContent='Tambah Menu';$('deleteBtn').classList.add('hidden');$('preview').classList.add('hidden');if(previewObjectUrl)URL.revokeObjectURL(previewObjectUrl);previewObjectUrl='';}
+function editProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;resetForm();$('productId').value=p.id;$('name').value=p.name||'';$('series').value=p.series||'';$('priceS').value=p.prices?.S??'';$('priceM').value=p.prices?.M??'';$('priceL').value=p.prices?.L??'';$('imageUrl').value=p.image_url||'';$('active').value=String(p.active!==false);editingImage=p.image_url||'';$('editorTitle').textContent='Edit Menu';$('deleteBtn').classList.remove('hidden');if(editingImage){$('preview').src=editingImage;$('preview').classList.remove('hidden')}$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})}
+async function uploadImage(file){if(!file)return editingImage;if(file.size>5*1024*1024)throw new Error('Ukuran foto maksimal 5 MB.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Format foto harus JPG, PNG, atau WebP.');const ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';const path=Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;const {error}=await db.storage.from('menu-images').upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;const {data}=db.storage.from('menu-images').getPublicUrl(path);return data.publicUrl}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();status('loginStatus','Memeriksa akun...');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){status('loginStatus','Login gagal: '+error.message);return}await boot()});
+async function boot(){const {data:{session}}=await db.auth.getSession();if(!session){$('loginPanel').classList.remove('hidden');$('appPanel').classList.add('hidden');return}$('loginPanel').classList.add('hidden');$('appPanel').classList.remove('hidden');await loadProducts()}
+$('logoutBtn').onclick=async()=>{await db.auth.signOut();boot()};
+$('newBtn').onclick=()=>{resetForm();$('editor').classList.remove('hidden');$('editor').scrollIntoView({behavior:'smooth'})};
+$('cancelBtn').onclick=()=>{$('editor').classList.add('hidden');resetForm()};
+$('imageFile').onchange=()=>{const f=$('imageFile').files[0];if(!f)return;if(previewObjectUrl)URL.revokeObjectURL(previewObjectUrl);previewObjectUrl=URL.createObjectURL(f);$('preview').src=previewObjectUrl;$('preview').classList.remove('hidden')};
+$('productForm').addEventListener('submit',async e=>{e.preventDefault();const prices={};[['S','priceS'],['M','priceM'],['L','priceL']].forEach(([k,id])=>{if($(id).value!==''&&Number($(id).value)>0)prices[k]=Number($(id).value)});if(!Object.keys(prices).length){status('appStatus','Isi setidaknya satu harga ukuran.');return}const btn=$('saveBtn');btn.disabled=true;try{status('appStatus','Menyimpan menu...');let imageUrl=$('imageUrl').value.trim()||editingImage;const file=$('imageFile').files[0];if(file)imageUrl=await uploadImage(file);const row={name:$('name').value.trim(),series:$('series').value,prices,image_url:imageUrl||null,active:$('active').value==='true',updated_at:new Date().toISOString()};const id=$('productId').value;if(id)row.id=id;const {error}=await db.from('public_menu_products').upsert(row).select();if(error)throw error;status('appStatus','Menu berhasil disimpan ke database.');$('editor').classList.add('hidden');resetForm();await loadProducts()}catch(err){status('appStatus','Gagal menyimpan: '+err.message)}finally{btn.disabled=false}});
+async function removeProduct(id){const p=products.find(x=>String(x.id)===String(id));if(!p||!confirm('Hapus menu '+p.name+'? Penghapusan tidak bisa dibatalkan.'))return;const {error}=await db.from('public_menu_products').delete().eq('id',id);if(error){status('appStatus','Gagal menghapus: '+error.message);return}status('appStatus','Menu dihapus.');await loadProducts()}
+$('deleteBtn').onclick=()=>removeProduct($('productId').value);
+boot();
+</script>
+</body></html>
