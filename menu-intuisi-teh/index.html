@@ -1433,6 +1433,7 @@ a{text-decoration:none;color:inherit}
   var sizeWrap=document.getElementById('sizeFilter');
   var sizeTabs=document.getElementById('sizeTabs');
   var sections=Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
+  var baseOrder=ORDER.slice();
 
   function cardSize(card){
     var meta=card.querySelector('.product-meta');
@@ -1442,6 +1443,11 @@ a{text-decoration:none;color:inherit}
   }
 
   function renderSeriesTabs(){
+    sections=Array.prototype.slice.call(document.querySelectorAll('.menu-section'));
+    var dynamicOrder=baseOrder.filter(function(series){return sections.some(function(sec){return sec.dataset.series===series;});});
+    sections.forEach(function(sec){if(dynamicOrder.indexOf(sec.dataset.series)<0)dynamicOrder.push(sec.dataset.series);});
+    ORDER=dynamicOrder;
+    if(activeSeries!=='Semua' && ORDER.indexOf(activeSeries)<0)activeSeries='Semua';
     tabs.innerHTML='';
     ['Semua'].concat(ORDER).forEach(function(series){
       var b=document.createElement('button');
@@ -1557,6 +1563,7 @@ a{text-decoration:none;color:inherit}
   });
 
   if(search) search.addEventListener('input',applyFilters);
+  window.refreshPublicMenuFilters=function(){sections=Array.prototype.slice.call(document.querySelectorAll('.menu-section'));renderSeriesTabs();renderSizeTabs();applyFilters();};
   renderSeriesTabs();
   renderSizeTabs();
   applyFilters();
@@ -1717,7 +1724,7 @@ a{text-decoration:none;color:inherit}
         var track=section.querySelector(".track");track.innerHTML=buckets[series].join("");
         var count=section.querySelector(".count");if(count)count.textContent=buckets[series].length+" item";
       });
-      if(typeof renderSeriesTabs==="function"){renderSeriesTabs();renderSizeTabs();applyFilters();}
+      if(typeof window.refreshPublicMenuFilters==="function"){window.refreshPublicMenuFilters();}
     }catch(err){console.warn("Menu online belum dimuat; menggunakan menu bawaan.",err);}
   }
   document.addEventListener("DOMContentLoaded",loadPublicMenu);
