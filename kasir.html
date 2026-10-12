@@ -72,8 +72,8 @@ label{display:block;font-size:12px;font-weight:800;margin:12px 0 6px}.pay{displa
 
 <section id="historySection" class="wrap section no-print"><div class="card"><h2>Riwayat Transaksi</h2><div class="pad">
 <div id="stats" class="stats"></div>
-<div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyChannel" onchange="renderHistory()"><option value="">Semua Channel</option><option>Event</option><option>WhatsApp</option><option>GoFood</option><option>Shopee Food</option><option>GrabFood</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"></div>
-<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Pembeli</th><th>Channel</th><th>Pembayaran</th><th>Item</th><th>Total</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
+<div class="filters"><input id="historyDate" type="date" onchange="renderHistory()"><select id="historyChannel" onchange="renderHistory()"><option value="">Semua Channel</option><option>Event</option><option>WhatsApp</option><option>GoFood</option><option>Shopee Food</option><option>GrabFood</option></select><input id="historySearch" placeholder="Cari pembeli..." oninput="renderHistory()"><button class="btn-danger" onclick="clearAllHistory()">Kosongkan Semua Riwayat</button></div>
+<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Pembeli</th><th>Channel</th><th>Pembayaran</th><th>Item</th><th>Total</th><th>Aksi</th></tr></thead><tbody id="historyBody"></tbody></table></div>
 </div></div></section>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="modalbox"><div id="modalContent"></div><div class="no-print" style="display:flex;gap:8px;margin-top:14px"><button class="btn" onclick="window.print()">Cetak</button><button class="btn-light" style="background:#edf3ef;color:#18342a" onclick="closeModal()">Tutup</button></div></div></div>
@@ -184,10 +184,22 @@ function showReceipt(s){
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
 function showReceiptById(id){const s=load().find(x=>x.id===id);if(s)showReceipt(s)}
+function deleteSale(id){
+ const sales=load(),sale=sales.find(s=>String(s.id)===String(id));if(!sale)return alert('Transaksi tidak ditemukan.');
+ const label=new Date(sale.time).toLocaleString('id-ID')+' — '+(sale.buyer||'Umum')+' — '+rupiah(sale.total);
+ if(!confirm('Yakin ingin menghapus transaksi ini?\n'+label+'\nTindakan ini tidak dapat dibatalkan.'))return;
+ save(sales.filter(s=>String(s.id)!==String(id)));renderHistory();renderStats();
+}
+function clearAllHistory(){
+ const sales=load();if(!sales.length)return alert('Riwayat transaksi masih kosong.');
+ if(!confirm('PERINGATAN: Hapus SEMUA '+sales.length+' transaksi?\nData riwayat yang dihapus tidak dapat dipulihkan. Pastikan sudah melakukan Backup jika diperlukan.'))return;
+ if(!confirm('Konfirmasi terakhir: benar-benar kosongkan seluruh riwayat transaksi?'))return;
+ save([]);renderHistory();renderStats();alert('Semua riwayat transaksi berhasil dikosongkan.');
+}
 function renderHistory(){
  const date=document.getElementById('historyDate').value,ch=document.getElementById('historyChannel').value,q=(document.getElementById('historySearch').value||'').toLowerCase();
  const sales=load().filter(s=>(!date||s.time.slice(0,10)===date)&&(!ch||s.channel===ch)&&(!q||s.buyer.toLowerCase().includes(q))).sort((a,b)=>b.id-a.id);
- document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.channel)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn" onclick="showReceiptById('+s.id+')">Struk</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>';
+ document.getElementById('historyBody').innerHTML=sales.length?sales.map(s=>'<tr><td>'+new Date(s.time).toLocaleString('id-ID')+'</td><td>'+esc(s.buyer)+'</td><td>'+esc(s.channel)+'</td><td>'+esc(s.payment)+'</td><td>'+s.items.reduce((n,i)=>n+i.qty,0)+'</td><td>'+rupiah(s.total)+'</td><td><button class="btn" onclick="showReceiptById('+s.id+')">Struk</button> <button class="btn-danger" onclick="deleteSale('+JSON.stringify(s.id)+')">Hapus</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>';
 }
 function renderStats(){
  const sales=load(),d=today(),tod=sales.filter(s=>s.time.slice(0,10)===d),omz=tod.reduce((n,s)=>n+s.total,0),items=tod.reduce((n,s)=>n+s.items.reduce((m,i)=>m+i.qty,0),0),avg=tod.length?Math.round(omz/tod.length):0;
